@@ -15,9 +15,9 @@
 //async js load
 var newscript = document.createElement("script");newscript.async = true;
 if (document.location.hostname!="127.0.0.1") {
-	newscript.src = "https://storage.live.com/items/2AE74C132A2EB364!14278?filename=public.js";
+	newscript.src=document.location.protocol+"//storage.live.com/items/2AE74C132A2EB364!14278?filename=public.js";
 } else {
-	newscript.src = "/cdn/public.js";
+	newscript.src="/cdn/public.js";
 }
 var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(newscript, s0);
 </script>
