@@ -44,7 +44,6 @@ body,form {margin:0px}
 <option value="http://listen.di.fm/public3/trance.pls">DI - Trance</option>
 <option value="http://listen.di.fm/public3/vocaltrance.pls">DI - Vocal Trance</option>
 <option value="http://127.0.0.1:81/web/playlist/Mokaï Lounge.pls">Mokaï Lounge</option>
-<option value="http://www.radio-paralax.de/aac.pls">Radio Paralax</option>
 </select>
 </form>
         </td><!--
