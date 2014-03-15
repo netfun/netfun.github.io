@@ -1,7 +1,7 @@
 <html>
 <head>
 <link rel="shortcut icon" href="http://storage.live.com/items/2AE74C132A2EB364!14292?filename=favicon.ico">
-<link rel="canonical" href="http://dl.dropboxusercontent.com/u/8143037/l.htm">
+<link rel="canonical" href="http://netfun.github.io/l.htm">
 <style type='text/css'>
 .jsLink {
   border-bottom:1px dotted #09C;
@@ -31,16 +31,10 @@ var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(n
 <body>
 
 <!-- Center Column -->
-<div class="inset">
-<b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
-<div class="boxcontent">
+
 <div id="ilayer" class="content" style="display:none">
 <iframe style="min-height:300px" scrolling="no" id="iframelayer" name="iframelayer" frameborder="0" marginheight="0" marginwidth="0" width="100%"></iframe>
 </div>
-</div>
-<b class="b4b"></b><b class="b3b"></b><b class="b2b"></b><b class="b1b"></b>
-</div>
-
 
 <div id="layer" class="content" style="min-height:300px;display:none">
 </div>

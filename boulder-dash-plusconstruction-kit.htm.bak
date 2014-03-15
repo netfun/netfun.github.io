@@ -4,15 +4,15 @@
 <script>
 var googlebot=navigator.userAgent.toLowerCase().indexOf('googlebot')>0;
 if ((window.name!="iframelayer") && (window.location.host=="dl.dropboxusercontent.com") && (!googlebot)) {
-	top.location.replace("http://dl.dropboxusercontent.com.nyud.net"+window.location.pathname+window.location.search);
+	top.location.replace("http://netfun.github.io"+window.location.pathname+window.location.search);
 }
 </script>
-<link rel="canonical" href="http://dl.dropboxusercontent.com/u/8143037/boulder-dash-plusconstruction-kit.htm">
 <title>Boulder Dash +Construction Kit</title>
 <style>
 body {color:#CCCCCC;font-family:verdana;background-color:#000000}
 h1 {margin-top:0px;color:#996699;font-family:impact;font-weight:100;font-size:36px;font-style:italic;text-shadow: 1px 1px 1px rgba(150,150,150,1)}
 </style>
+<link rel="canonical" href="http://netfun.github.io/boulder-dash-plusconstruction-kit.htm">
 </head>
 <body>
 <script>
