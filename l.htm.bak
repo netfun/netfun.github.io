@@ -74,7 +74,7 @@ document.write('" width="100%" height="100%"></iframe>');
 <div id="navAlpha">
   <h2>Links</h2>
   <p></p>
-  <p><a onclick="document.getElementById('main').src='http://boulderdash.krissz.hu/';return false" onmouseover="if (document.location.hostname!='127.0.0.1') { window.frames['iframelayer'].location.replace('http://dl.dropboxusercontent.com.nyud.net/u/8143037/boulder-dash-plusconstruction-kit.htm') } else { window.frames['iframelayer'].location.replace('boulder-dash-plusconstruction-kit.htm') } document.getElementById('ilayer').style.display='block'" onmouseout="document.getElementById('ilayer').style.display='none';window.frames['iframelayer'].location.replace('about:blank')" target="main" href="boulder-dash-plusconstruction-kit.htm">Boulder Dash</a></p>
+  <p><a onclick="document.getElementById('main').src='http://boulderdash.krissz.hu/';return false" onmouseover="window.frames['iframelayer'].location.replace('boulder-dash-plusconstruction-kit.htm');document.getElementById('ilayer').style.display='block'" onmouseout="document.getElementById('ilayer').style.display='none';window.frames['iframelayer'].location.replace('about:blank')" target="main" href="boulder-dash-plusconstruction-kit.htm">Boulder Dash</a></p>
   <p><a target="main" href="load.htm?http://www.masswerk.at/JavaPac/JS-PacMan2.html">JS-Pacman</a></p>
   <p><a onmouseover="ajaxpage('ajax/boulder-dash-plusconstruction-kit.htm','layer');document.getElementById('layer').style.display='block'" onmouseout="ajaxpage('ajax/blank.htm','layer');document.getElementById('layer').style.display='none'" target="main" href="http://boulderdash.krissz.hu/">Boulder Dash</a></p>
   <p><a href="http://lipsum.com/">Lipsum.com</a></p>
