@@ -12,7 +12,7 @@ body,form {margin:0px}
 <body bgcolor="#EAEAEA">
 <table border="0" cellpadiing="0" cellspacing="0" width="100%" height="100%">
     <tr>
-    		<td><font color="#B0B0B0" style="margin:0px;font-weight:900;font-size:19px" face="arial"><i><nobr> http://netfun.github.io &raquo; Home</nobr></i></font></td>
+    		<td><font color="#B0B0B0" style="margin:0px;font-weight:900;font-size:19px" face="arial"><i><nobr> netfun.github.io &raquo; Home</nobr></i></font></td>
         <td align="right" width="100%">
 <form>
 <select style="width:106px" id="danish" onchange="window.open(this.options[this.selectedIndex].value,'full');document.getElementById('danish').selectedIndex = 0">
