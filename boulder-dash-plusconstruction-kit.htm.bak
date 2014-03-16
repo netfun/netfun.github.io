@@ -1,12 +1,6 @@
 <html>
 <head>
 <link rel="shortcut icon" href="http://storage.live.com/items/2AE74C132A2EB364!14298?filename=boulder-dash-plusconstruction-kit.gif">
-<script>
-var googlebot=navigator.userAgent.toLowerCase().indexOf('googlebot')>0;
-if ((window.name!="iframelayer") && (window.location.host=="dl.dropboxusercontent.com") && (!googlebot)) {
-	top.location.replace("http://netfun.github.io"+window.location.pathname+window.location.search);
-}
-</script>
 <title>Boulder Dash +Construction Kit</title>
 <style>
 body {color:#CCCCCC;font-family:verdana;background-color:#000000}
