@@ -24,7 +24,7 @@ document.write ('"></iframe>');
 
 <script>
 //statcounter
-if ((window.name!="iframelayer") && (window.location.host=="dl.dropboxusercontent.com.nyud.net")) {
+if ((window.name!="iframelayer") && (window.location.host=="netfun.github.io")) {
 	var sc_project=9636879; 
 	var sc_invisible=1; 
 	var sc_security="715823ab"; 
