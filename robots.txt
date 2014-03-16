@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /*.bak$
 Disallow: /ajax/
 Disallow: /.git/
 Host: netfun.github.io
