@@ -68,7 +68,7 @@ https://onedrive.live.com/redir?resid=2AE74C132A2EB364!14298&authkey=!AEYQ6qGnzC
   						if (document.location.search.substring(1).indexOf('&')>=0) {
   							document.getElementById('full').src="l.htm?"+document.location.search.substring(1).match(/(.*?)&/i)[1]+".htm&"+document.location.search.substring(1).split('&')[1];
   						} else if (document.location.search.substring(1).indexOf('flash=')>=0) {
-  							document.getElementById('full').src="l.htm?http://vps1-netfun.rhcloud.com.nyud.net/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
+  							document.getElementById('full').src="l.htm?http://vps1-netfun.rhcloud.com/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
   						} else {
   							document.getElementById('full').src="l.htm?"+document.location.search.substring(1)+".htm";
   						}
