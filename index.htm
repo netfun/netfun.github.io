@@ -69,7 +69,11 @@ https://onedrive.live.com/redir?resid=2AE74C132A2EB364!14298&authkey=!AEYQ6qGnzC
   							document.getElementById('full').src="l.htm?"+document.location.search.substring(1).match(/(.*?)&/i)[1]+".htm&"+document.location.search.substring(1).split('&')[1];
   						} else if (document.location.search.substring(1).indexOf('flash=')>=0) {
   							if (document.location.hostname!="127.0.0.1") {
-  								document.getElementById('full').src="l.htm?http://os1-netfun.rhcloud.com.nyud.net/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
+									if (document.location.protocol=="http:") {  								
+  									document.getElementById('full').src="l.htm?http://os1-netfun.rhcloud.com.nyud.net/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
+									} else {
+										document.getElementById('full').src="l.htm?https://os1-netfun.rhcloud.com/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
+									}
 								} else {
 									document.getElementById('full').src="l.htm?http://127.0.0.1:82/flash/"+document.location.search.substring(1).split('=')[1]+'.swf';
 								}
