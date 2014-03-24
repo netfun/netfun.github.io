@@ -1,6 +1,6 @@
 <html>
 <head>
-<link rel="shortcut icon" href="http://storage.live.com/items/2AE74C132A2EB364!14292?filename=favicon.ico">
+<link rel="shortcut icon" href="favicon.ico">
 <link rel="canonical" href="http://netfun.github.io/l.htm">
 <style type='text/css'>
 .jsLink {
@@ -17,11 +17,7 @@
 	
 //async js load
 var newscript = document.createElement("script");newscript.async = true;
-if (document.location.hostname!="127.0.0.1") {
-	newscript.src=document.location.protocol+"//storage.live.com/items/2AE74C132A2EB364!14278?filename=public.js";
-} else {
-	newscript.src="/cdn/public.js";
-}
+newscript.src="jscripts/netfun.js";
 var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(newscript, s0);
 </script>
 
