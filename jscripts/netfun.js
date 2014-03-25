@@ -1,9 +1,10 @@
+//Stylesheet
 var $ = document; // shortcut
-var public = 'css';  // you could encode the css path itself to generate id..
-if (!$.getElementById(public)) {
+var netfun = 'css';  // you could encode the css path itself to generate id..
+if (!$.getElementById(netfun)) {
   var head  = $.getElementsByTagName('head')[0];
   var link  = $.createElement('link');
-  link.id   = public;
+  link.id   = netfun;
   link.rel  = 'stylesheet';
   link.type = 'text/css';
   link.href = 'css/netfun.css';
@@ -11,7 +12,6 @@ if (!$.getElementById(public)) {
   head.appendChild(link);
 }
 //Collapsible 3-Column Layout Javascript by Mike Foster (Cross-Browser.com)
-//CSS and HTML structure by BlueRobot.com
 function toggleAlpha() {
   if (!enabled) return;
   var d, m, e, a, i;
