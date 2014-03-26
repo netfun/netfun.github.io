@@ -14,21 +14,22 @@
 <script>
 //use for detect if ref empty or = netfun.github.io for load frame
 //if (document.referrer.indexOf('http://netfun.github.io/?http')>=0) {	
-	
+
 //async js load
 var newscript = document.createElement("script");newscript.async = true;
 newscript.src="jscripts/netfun.js";
 var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(newscript, s0);
 </script>
 
-<title>Collapsible 3-Column Layout</title>
 
 
 
 </head>
 
 <body>
-	
+
+
+
 <div id="navAlpha">
   <h2>Links</h2>
   <p></p>
@@ -48,30 +49,12 @@ var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(n
 </div>
 
 <div class="content">
-<script>
-document.write('<iframe id="main" name="main" frameborder="0" marginheight="0" marginwidth="0" src="');
-if (document.location.search.substring(1)!="") {
-	if (document.location.search.substring(1).indexOf('&')>=0) {
-		document.write (document.location.search.substring(1).replace('&', '?'));
-	} else {
-		document.write (document.location.search.substring(1));
-	}
-} else {
-	document.write ('home.htm');
-}
-document.write('" width="100%" height="100%"></iframe>');
-</script>
-</div><!-- end content 2 -->
-
-<!-- Footer -->
-
-<div class="content">
-  <h1>Collapsible 3-Column Layout</h1>
-	<p>
-  <button onclick='toggleAlpha()'>Toggle Alpha Column</button>
-  <button onclick='toggleBeta()' style='margin-left:20px'>Toggle Beta Column</button>
-  </p>
+<iframe id="main" name="main" frameborder="0" marginheight="0" marginwidth="0" src="about:blank" width="100%" height="100%"></iframe>
 </div>
+
+<!-- end content 2 -->
+
+
 
 <!-- Absolutely Positioned Left and Right Columns -->
 
@@ -81,7 +64,7 @@ document.write('" width="100%" height="100%"></iframe>');
 
 
 
-
+	
 
 
 

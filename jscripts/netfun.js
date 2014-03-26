@@ -55,5 +55,5 @@ window.onload = function() {
   if (e && xDef(e.style) && document.getElementsByTagName) {
     enabled = true;
   }
-  toggleBeta();
+	toggleBeta();
 }
