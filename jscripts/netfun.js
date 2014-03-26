@@ -57,3 +57,6 @@ window.onload = function() {
   }
 	toggleBeta();
 }
+window.addEventListener("load", function() {
+	document.getElementById('main').src="home.htm";
+}, false);

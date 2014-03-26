@@ -12,10 +12,7 @@
 <title>Collapsible 3-Column Layout</title>
 
 <script>
-//use for detect if ref empty or = netfun.github.io for load frame
-//if (document.referrer.indexOf('http://netfun.github.io/?http')>=0) {	
 
-//async js load
 var newscript = document.createElement("script");newscript.async = true;
 newscript.src="jscripts/netfun.js";
 var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(newscript, s0);
@@ -42,10 +39,13 @@ var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(n
 </div>
 
 <div class="content">
-<iframe id="main" name="main" frameborder="0" marginheight="0" marginwidth="0" src="about:blank" width="100%" height="100%"></iframe>
+<iframe id="main" name="main" frameborder="0" marginheight="0" marginwidth="0" width="100%" height="100%"></iframe>
+
 </div>
 
-<!-- end content 2 -->
+<script>
+
+</script>
 <div id="navAlpha">
   <h2>Links</h2>
   <p></p>
@@ -56,11 +56,9 @@ var s0 = document.getElementsByTagName('script')[0];s0.parentNode.insertBefore(n
 </div>
 
 
-<!-- Absolutely Positioned Left and Right Columns -->
 
-<div id="navBeta">
 
-</div>
+<div id="navBeta"></div>
 
 
 
