@@ -11,13 +11,13 @@ html,body {height:100%;width:100%;overflow:hidden}
 <table cellpadding="0" cellspacing="0" style="height:100%;width:100%;table-layout:static;border-collapse:collapse">
   <tr>
   	<td style="height:100%">
-      <iframe style="height:100%;width:100%" frameborder="0"></iframe>
+      <iframe id="iframe" style="height:100%;width:100%" frameborder="0"></iframe>
 <script>
 function setIframeSrc() {
   if ( -1 == navigator.userAgent.indexOf("MSIE") ) {
-    document.getElementById('iframe1').src = "home.htm";
+    document.getElementById('iframe').src = "home.htm";
   } else {
-    document.getElementById('iframe1').location = "home.htm";
+    document.getElementById('iframe').location = "home.htm";
   }
 }
 setTimeout(setIframeSrc, 5);
