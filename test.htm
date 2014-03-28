@@ -14,13 +14,10 @@ html,body {height:100%;width:100%;overflow:hidden}
       <iframe style="height:100%;width:100%" frameborder="0"></iframe>
 <script>
 function setIframeSrc() {
-  var s = "home.htm";
-  var iframe1 = document.getElementById('iframe1');
   if ( -1 == navigator.userAgent.indexOf("MSIE") ) {
-    iframe1.src = s;
-  }
-  else {
-    iframe1.location = s;
+    document.getElementById('iframe1').src = "home.htm";
+  } else {
+    document.getElementById('iframe1').location = "home.htm";
   }
 }
 setTimeout(setIframeSrc, 5);
