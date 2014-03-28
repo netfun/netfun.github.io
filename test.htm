@@ -27,17 +27,7 @@ html,body {height:100%;width:100%;overflow:hidden}
 </div>
 <script type="text/javascript">
 //Dynamic Ajax Content- © Dynamic Drive DHTML code library (www.dynamicdrive.com/dynamicindex17/ajaxcontent.htm)
-function downloadJSAtOnload() {
-var defer = document.createElement("script");
-defer.async = true;
-defer.src = "jscripts/netfun.js";
-document.body.appendChild(defer);
-}
-if (window.addEventListener)
-window.addEventListener("load", downloadJSAtOnload, false);
-else if (window.attachEvent)
-window.attachEvent("onload", downloadJSAtOnload);
-else window.onload = downloadJSAtOnload;
+function downloadJSAtOnload(){var a=document.createElement("script");a.async=true;a.src="jscripts/netfun.js";document.body.appendChild(a)}if(window.addEventListener){window.addEventListener("load",downloadJSAtOnload,false)}else{if(window.attachEvent){window.attachEvent("onload",downloadJSAtOnload)}else{window.onload=downloadJSAtOnload}};
 </script>
 </body>
 </html>
