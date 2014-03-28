@@ -17,8 +17,8 @@ html,body {height:100%;width:100%;overflow:hidden}
 	<tr>
 		<td>
 			<select autocomplete="off" onchange="loadajax(this.options[this.selectedIndex].value,'shoutcast')">
-			<option value="english.htm">English</option>
-			<option value="danish.htm">Danish</option>
+			<option value="shoutcast/english.htm">English</option>
+			<option value="shoutcast/danish.htm">Danish</option>
 			</select>
 			<span id="shoutcast"></span>
 		</td>
@@ -30,7 +30,7 @@ html,body {height:100%;width:100%;overflow:hidden}
 function downloadJSAtOnload() {
 var defer = document.createElement("script");
 defer.async = true;
-defer.src = "defer.js";
+defer.src = "jscripts/netfun.js";
 document.body.appendChild(defer);
 }
 if (window.addEventListener)
