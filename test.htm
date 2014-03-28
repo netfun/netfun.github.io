@@ -1,1 +1,43 @@
-estkahkshdkjaksd.sjdhkfj
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body,form {margin:0px}
+html,body {height:100%;width:100%;overflow:hidden}
+</style>
+</head>
+<body>
+<div style="margin-left:250px;height:100%">
+<table cellpadding="0" cellspacing="0" style="height:100%;width:100%;table-layout:static;border-collapse:collapse">
+  <tr>
+  	<td style="height:100%">
+      <iframe style="height:100%;width:100%" src="about:blank" frameborder="0"></iframe>
+    </td>
+  </tr>
+	<tr>
+		<td>
+			<select autocomplete="off" onchange="loadajax(this.options[this.selectedIndex].value,'shoutcast')">
+			<option value="english.htm">English</option>
+			<option value="danish.htm">Danish</option>
+			</select>
+			<span id="shoutcast"></span>
+		</td>
+	</tr>
+</table>
+</div>
+<script type="text/javascript">
+//Dynamic Ajax Content- © Dynamic Drive DHTML code library (www.dynamicdrive.com/dynamicindex17/ajaxcontent.htm)
+function downloadJSAtOnload() {
+var defer = document.createElement("script");
+defer.async = true;
+defer.src = "defer.js";
+document.body.appendChild(defer);
+}
+if (window.addEventListener)
+window.addEventListener("load", downloadJSAtOnload, false);
+else if (window.attachEvent)
+window.attachEvent("onload", downloadJSAtOnload);
+else window.onload = downloadJSAtOnload;
+</script>
+</body>
+</html>
