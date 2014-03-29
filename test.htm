@@ -80,11 +80,11 @@ while (src = scripts.shift()) {
     // must set src AFTER adding onreadystatechange listener
     // else we’ll miss the loaded event for cached scripts
     script.src = src;
-    loadajax("shoutcast/english.htm","shoutcast");
   }
   else { // fall back to defer
     document.write('<script src="' + src + '" defer></'+'script>');
   }
+  loadajax("shoutcast/english.htm","shoutcast");
 }
 </script>
 </body>
