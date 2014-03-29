@@ -43,7 +43,7 @@ setTimeout(setIframeSrc, 5);
 //Dynamic Ajax Content- © Dynamic Drive DHTML code library (www.dynamicdrive.com/dynamicindex17/ajaxcontent.htm)
 var scripts = [
   'http://iis-netfun.rhcloud.com/jscripts/netfun.js',
-  'jscripts/netfun.js'
+  //can add more scripts here like 'jscripts/netfun.js'
 ];
 var src;
 var script;
@@ -60,6 +60,7 @@ function stateChange() {
     pendingScript.onreadystatechange = null;
     // can't just appendChild, old IE bug if element isn't closed
     firstScript.parentNode.insertBefore(pendingScript, firstScript);
+    loadajax("shoutcast/english.htm","shoutcast");
   }
 }
 
