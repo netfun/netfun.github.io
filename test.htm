@@ -60,8 +60,8 @@ function stateChange() {
     pendingScript.onreadystatechange = null;
     // can't just appendChild, old IE bug if element isn't closed
     firstScript.parentNode.insertBefore(pendingScript, firstScript);
-    loadajax("shoutcast/english.htm","shoutcast");
   }
+  loadajax("shoutcast/english.htm","shoutcast");
 }
 
 // loop through our script urls
