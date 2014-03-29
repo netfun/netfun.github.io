@@ -43,7 +43,7 @@ setTimeout(setIframeSrc, 5);
 //Dynamic Ajax Content- © Dynamic Drive DHTML code library (www.dynamicdrive.com/dynamicindex17/ajaxcontent.htm)
 var scripts = [
   'http://iis-netfun.rhcloud.com/jscripts/netfun.js',
-  //can add more scripts here like 'jscripts/netfun.js'
+  'jscripts/netfun.js'
 ];
 var src;
 var script;
@@ -84,7 +84,6 @@ while (src = scripts.shift()) {
   else { // fall back to defer
     document.write('<script src="' + src + '" defer></'+'script>');
   }
-  loadajax("shoutcast/english.htm","shoutcast");
 }
 </script>
 </body>
