@@ -10,17 +10,17 @@ html,body {height:100%;width:100%}
 </style>
 </head>
 <body>
-<div style="margin-left:250px;height:100%">
+<div style="margin-left:236px;height:100%">
 <table cellpadding="0" cellspacing="0" style="height:100%;width:100%;table-layout:static;border-collapse:collapse">
   <tr>
   	<td style="height:100%">
-      <iframe id="iframe" style="height:100%;width:100%" frameborder="0"></iframe>
+      <iframe id="iframe" name="iframe" style="height:100%;width:100%" frameborder="0"></iframe>
 <script>
 function setIframeSrc() {
-  if ( -1 == navigator.userAgent.indexOf("MSIE") ) {
-    document.getElementById('iframe').src = "home.htm";
+  if(-1==navigator.userAgent.indexOf("MSIE")) {
+    document.getElementById('iframe').src="home.htm";
   } else {
-    document.getElementById('iframe').location = "home.htm";
+    document.getElementById('iframe').location="home.htm";
   }
 }
 setTimeout(setIframeSrc, 5);
@@ -28,12 +28,12 @@ setTimeout(setIframeSrc, 5);
     </td>
   </tr>
 	<tr>
-		<td>
+		<td align="right">
 			<select autocomplete="off" onchange="loadajax(this.options[this.selectedIndex].value,'shoutcast')">
 			<option value="shoutcast/english.htm">English</option>
 			<option value="shoutcast/danish.htm">Danish</option>
 			</select>
-			<span id="shoutcast"></span><a href="http://shoutcast.com/" target="full"><img style="margin-top:4px" alt="50K+ Shoutcast Radio Stations" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAklEQVQ4y32TXUhTYRjH12raUaLmR8s5ZO64qfmVy6nbNHOrPHPpbFNXpuY2T5SkLarZinKhtVW2rZQJphkYiDqt0RIMlAwkAgnpJogoxC6imwo6Qd38m0JEtXrv3o/fn4ff+zws1n/W8N1hTXV19YRYLCb+vMsRcCKzBZyGf8IjIyOU1Wpl6uvroVKpgkKhcDWEjF+7RiGKqCpIjliMjWbTYWG/319mt9sZmqaxEmAwGKBQFj0oIKOVuzM2zO2QEF83RbFbQ0/X/QXfDwQox8WLTFtbG4xGI0wmM/bptGiuKsRZAwmLWvAlbsO68PDU1BR15YqLaW8/g6YmE/Yba9FSR2Hg9G5MnMqF53A+REkJL7hcbtRf8PT0NOXxeBmHw4GV0s21ZRjqOID5q2osXi/B+HkNcjLTIZfLkZaWFoyNjf0ldnZmhvL5fIzT5cKJo41wn9RjYdCC11dT8d6XhyfdlZDlZqOyUgeFQgGpVApSRAZDlRCsubnH1MDAAOM4Z8P51oN40NOK5zc1WHIm4vMNAT5cT8RkyxYcryChLdqKMnUxpLnbkJGRiaSkpCDLP+6/5/W4caimHPW6ErTqMtBdG4/ZE/FYdibgk1eAd65EPG3n4XYjF01yAgpyPVKFCRCJRAwrEAgQQ0N3Hro9HnR1XUIzfRhmswm0YQde3arEx74sLK8EnBOi28hDoYSLFFIEsUTCxMTEUKsOJiYnif7+/uBlpxMXOjpAmxsx5mrEyz4N3vQWY/7aHlj121Y9yGT5yMrKYuLi4qjffmF0bJTw9fU9tNtOotdeh0edpVjwlsN9tARUqRwVuiqUlqqQl5fH8Hg8KmwH7touSutsqfg+eEwKNy1DmTIbNbVG0M00NBoNlEolw+fzw8OFZJTQuFP8tqFo87e9xelLhuoaWCyWkA8z9Ho91Go1E7IeHs4XRiSXSIg3WxM4z6Ij2PtSUlI2hhoq+HMWtFotEzIeHi5IjhRm8jlT3Cj2kdB248/znp4ewmazBfUGAyORSKh/Te0PoWxUXhrAEEIAAAAASUVORK5CYII=" width="16" height="16" border="0"></a>
+			<span id="shoutcast"></span><a href="http://shoutcast.com/" target="iframe"><img style="margin-top:4px" alt="50K+ Shoutcast Radio Stations" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAklEQVQ4y32TXUhTYRjH12raUaLmR8s5ZO64qfmVy6nbNHOrPHPpbFNXpuY2T5SkLarZinKhtVW2rZQJphkYiDqt0RIMlAwkAgnpJogoxC6imwo6Qd38m0JEtXrv3o/fn4ff+zws1n/W8N1hTXV19YRYLCb+vMsRcCKzBZyGf8IjIyOU1Wpl6uvroVKpgkKhcDWEjF+7RiGKqCpIjliMjWbTYWG/319mt9sZmqaxEmAwGKBQFj0oIKOVuzM2zO2QEF83RbFbQ0/X/QXfDwQox8WLTFtbG4xGI0wmM/bptGiuKsRZAwmLWvAlbsO68PDU1BR15YqLaW8/g6YmE/Yba9FSR2Hg9G5MnMqF53A+REkJL7hcbtRf8PT0NOXxeBmHw4GV0s21ZRjqOID5q2osXi/B+HkNcjLTIZfLkZaWFoyNjf0ldnZmhvL5fIzT5cKJo41wn9RjYdCC11dT8d6XhyfdlZDlZqOyUgeFQgGpVApSRAZDlRCsubnH1MDAAOM4Z8P51oN40NOK5zc1WHIm4vMNAT5cT8RkyxYcryChLdqKMnUxpLnbkJGRiaSkpCDLP+6/5/W4caimHPW6ErTqMtBdG4/ZE/FYdibgk1eAd65EPG3n4XYjF01yAgpyPVKFCRCJRAwrEAgQQ0N3Hro9HnR1XUIzfRhmswm0YQde3arEx74sLK8EnBOi28hDoYSLFFIEsUTCxMTEUKsOJiYnif7+/uBlpxMXOjpAmxsx5mrEyz4N3vQWY/7aHlj121Y9yGT5yMrKYuLi4qjffmF0bJTw9fU9tNtOotdeh0edpVjwlsN9tARUqRwVuiqUlqqQl5fH8Hg8KmwH7touSutsqfg+eEwKNy1DmTIbNbVG0M00NBoNlEolw+fzw8OFZJTQuFP8tqFo87e9xelLhuoaWCyWkA8z9Ho91Go1E7IeHs4XRiSXSIg3WxM4z6Ij2PtSUlI2hhoq+HMWtFotEzIeHi5IjhRm8jlT3Cj2kdB248/znp4ewmazBfUGAyORSKh/Te0PoWxUXhrAEEIAAAAASUVORK5CYII=" width="16" height="16" border="0"></a>
 		</td>
 	</tr>
 </table>
