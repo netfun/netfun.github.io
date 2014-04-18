@@ -1,0 +1,3332 @@
+<html>
+<head>
+<title>Moon Patrol</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+.loadtextr {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#ff0000}
+.loadtextg {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#00ff00}
+.loadtextb {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#0000ff}
+.loadtexty {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#ffff00}
+.statusfont {font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#ffff00}
+.levelfont {font-family:Arial,Helvetica,sans-serif;font-size:20px;color:#000000}
+.dtext {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#ff0000}
+.dtextb {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#00B8DE}
+.dtextw {font-family:Arial,Helvetica,sans-serif; font-size:25px;color:#F0F0F0}
+.ltext {font-family:Arial,Helvetica,sans-serif; font-size:15px;color:#ff0000}
+</style>
+
+<script language="Javascript" src="sprite.js"></script> 
+<script language="JavaScript">
+var maxPanels=65;
+var panelWidth=8 ;
+var landLeftOffset=100 ;
+var landBase=400 ;
+var landStartHeight=60 ;
+var maxHeight=landStartHeight+3 ;
+var minHeight=landStartHeight-3
+var lastHeight=60,holeStartHeight ;
+var landHeights=new Array() ;
+var landTops=new Array() ;
+var holing=0;
+var foreLandTop=230 ;
+var smallHole=new Array(16,0,-4,-8,-10,-18,-25,-30,-28,-26,-30,-25,-18,-10,-8,-4,0) ;
+var bigHole=new Array(21,0,-4,-8,-10,-18,-25,-27,-30,-29,-30,-31,-30,-28,-26,-30,-25,-18,-10,-8,-4,0) ;
+var holes=new Array(smallHole,bigHole) ;
+var foreland=0,backland=0 ;
+var gradient=0 ;
+var downSlope=0 ;
+var	endSlopeUp=0 ;
+var gradPos=0 ;
+var holingCountdown=0 ;		// Used to set n panels as holing
+var base=0 ;
+
+var backLandTop=180;
+var obstacles=new Array() ;
+var maxObstacles=10 ;
+var level=0 ;
+var currentLevel=0 ;		// This is the 
+var aliens=new Array() ;
+var maxAliens=8 ;
+var maxAlienBullets=10 ;
+var abMask=new Array()  ;
+var maxX=landLeftOffset+(maxPanels*panelWidth); 
+var gravity=1 ;
+var endSection=0 ;
+var statusDisplay=0 ;
+var records=new Array(80,84,84,84,130) ;
+var averages=new Array(84,80,80,90,140) ;
+var averageCounts=new Array(1,1,1,1,1) ;
+var secTimer=0 ;
+var contScreen=0 ;
+var scrollStep=0 ;
+var alien2BulletHoldoff=0;
+var type3BombDelay=40 ;
+
+
+
+var last=0 ;
+var diedInStage=0 ;
+var ocdDisplay=0 ;
+var allLoaded=0 ;
+
+
+
+
+
+var switches=0 ;
+var LEFT=1 ;
+var RIGHT=2 ;
+var FIRE=4 ;
+var JUMP=8 ;
+var fireStop=FIRE ;
+var jumpStop=JUMP ;
+
+
+
+
+
+var nukeDelay=0 ;
+var levelTime=0 ;
+
+
+// Vars for level restart
+// We need to make a note of these when they are placed so we can restore them later if the letter is passed
+var lastStageScrollCount;	// Number of scrolls up to placing the last stage terminator
+var lastStageIndex ;		// Level array index of the last stage terminator+1 at placement
+
+// We need to copy the above into these vars when we actually pass the letel letter
+var	lastStageScrollCountRestore ;
+var lastStageIndexRestore ;
+
+	
+
+
+
+// Define some constants
+var HOLE=1<<9 ;
+var LGROCK=2<<9 ;
+var SMROCK=3<<9 ;
+var ENDLEV=4<<9 ;
+var ENDSECTION=5<<9;
+var ALIEN1=6<<9 ;
+var ALIEN2=7<<9 ;
+var ALIEN3=8<<9 ;
+var TANK=9<<9 ;
+var SLOPE=10<<9 ;
+var ENDGAME=11<<9 ;
+var MINE=12<<9 ;
+var	GRADIENTUP=13<<9 ;
+var	GRADIENTDOWN=14<<9 ;
+var	GRADIENTZERO=15<<9 ;
+var LGRROCK=16<<9 ;
+var	SMRROCK=17<<9 ;	
+var	ALIENRETREAT=18<<9 ;
+var	RESTART=19<<9 ;
+var LHOLE=20<<9 ;
+var HIGHLAND=21<<9 ;
+
+
+
+var alienAniSpeed=4 ;
+
+// And some for the scroller
+var INHOLING=512 ;
+var NOTHOLING=~INHOLING ;
+
+var alienBonus = new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) ;
+var alienBonusIndex=0 ;
+var lastObs=0 ;
+
+var level1=new Array(80,30+HOLE,50+HOLE,30+LGROCK,50+HOLE,50+LGROCK,10+ENDSECTION);
+level1=level1.concat(30,1+ALIEN1,110+ALIEN1,1+ALIEN2,90+ALIEN2,90+LGROCK,1+ENDSECTION);
+level1=level1.concat(30,1+ALIEN1,10+ALIEN1,120+LGROCK,30+LGROCK,30+HOLE,30+LGROCK,30+LGROCK,1+ENDSECTION);
+level1=level1.concat(30,50+HOLE,1+ALIEN2,1+ALIEN2,1+ALIEN2,100+HOLE,80+LGROCK,1+ENDSECTION);
+level1=level1.concat(10,1+ALIEN3,90+ALIEN3,1+ALIEN1,80+ALIEN1,60+ALIENRETREAT,30+LGROCK,20+HOLE,1+ENDLEV) ;
+
+
+var level2=new Array(30,1+ALIEN3,80+ALIEN3,1+ALIEN2,120+ALIEN2,60+ALIENRETREAT,60+HOLE,30+LGROCK,1+ENDSECTION) ;
+level2=level2.concat(30,40+HOLE,50+LHOLE,30+SMROCK,60+LGROCK,2+LGROCK,25+LGROCK,30+LGROCK,20+SMROCK,30+HOLE,30+LGROCK,10+LGROCK,1+ENDSECTION) ;
+level2=level2.concat(30,40+LHOLE,30+LGROCK,37+LHOLE,1+LGROCK,1+ALIEN1,1+ALIEN1,30+ALIEN1,120+LGROCK,1+ENDSECTION) ;
+level2=level2.concat(10,1+ALIEN3,40+ALIEN3,1+ALIEN1,120+ALIEN1,1+ENDSECTION) ;
+level2=level2.concat(10,1+ALIEN3,1+ALIEN3,120+ALIEN3,60+ALIENRETREAT,30+LGROCK,40+LHOLE,25+LGROCK,25+SMROCK,2+LGROCK,20+LGROCK,20+LHOLE,1+ENDLEV) ;
+
+
+
+var level3=new Array(80,20+MINE,40+MINE,20+MINE,40+MINE,2+MINE,30+MINE,40+MINE,30+MINE,30+MINE,2+MINE,20+MINE,1+ENDSECTION) ;
+level3=level3.concat(30,30+MINE,30+MINE,2+MINE,30+MINE,30+MINE,20+MINE,20+MINE,30+MINE,2+MINE,25+MINE,20+MINE,25+MINE,20,1+ENDSECTION) ;
+level3=level3.concat(30,2+MINE,20+MINE,2+MINE,30+MINE,2+MINE,20+MINE,20+MINE,2+MINE,30+MINE,2+MINE,30+MINE,30+MINE,20+MINE,20+MINE,80,1+ENDSECTION) ;
+level3=level3.concat(30,1+ALIEN1,1+ALIEN1,140+ALIEN1,1+ALIEN2,1+ALIEN2,140+ALIEN2,1+ENDSECTION) ;
+level3=level3.concat(30,1+ALIEN3,1+ALIEN3,1+ALIEN3,140+ALIEN3,1+ALIEN2,1+ALIEN2,140+ALIEN2,1+ENDLEV) ;
+
+
+var level4=new Array(40,1+ALIEN3,1+ALIEN3,1+ALIEN3,80+ALIEN3,1+ALIEN1,1+ALIEN1,200+ALIEN1,1+ENDSECTION) ;
+level4=level4.concat(80+ALIENRETREAT,30+GRADIENTUP,30+SMRROCK,30+LGRROCK,8+LGRROCK,30+LGRROCK,40+SMRROCK,8+LGRROCK,30+LGRROCK,40+LGRROCK,8+LGRROCK,40+LGRROCK,20+SMRROCK,30+LGRROCK,80+GRADIENTZERO,1+ENDSECTION) ;
+level4=level4.concat(30+HIGHLAND,1+ALIEN2,1+ALIEN2,1+ALIEN2,120+ALIEN2,100+LGROCK,2+LGROCK,120+LGROCK,40+LHOLE,2+LGROCK,60+LGROCK,1+ENDSECTION );
+level4=level4.concat(40+HIGHLAND,1+ALIEN2,20+ALIEN2,30+GRADIENTDOWN,1+ALIEN1,1+ALIEN1,65,30+ENDSECTION) ;
+level4=level4.concat(40,1+ALIEN1,1+ALIEN1,30+ALIEN1,1+ALIEN3,1+ALIEN3,200+ALIEN3,1+ENDLEV) ;
+
+
+
+var level5=new Array(80,8+LGROCK,30+LGROCK,40+LHOLE,40+HOLE,40+LGROCK,40+LHOLE,30+LHOLE,40+HOLE,8+LGROCK,10+LGROCK,50+LHOLE,30+HOLE,1+ENDSECTION) ;
+level5=level5.concat(20,17+LGROCK,15+LGROCK,40+LHOLE,30+TANK,30+TANK,40+TANK,40+LHOLE,30+TANK,30+TANK,30+TANK,30+TANK,1+ENDSECTION) ;
+level5=level5.concat(30+ALIENRETREAT,30+LHOLE,40+LHOLE,50+LHOLE,40+LHOLE,65+GRADIENTUP,30+LGRROCK,10+SMRROCK,15+SMRROCK,40+SMRROCK,10+SMRROCK,20+SMRROCK,80+GRADIENTZERO,1+ENDSECTION) ;
+level5=level5.concat(40+HIGHLAND,1+ALIEN1,1+ALIEN1,1+ALIEN1,120+ALIEN1,1+ALIEN2,1+ALIEN2,120+ALIEN2,1+ENDSECTION) ;
+level5=level5.concat(30+HIGHLAND,1+ALIEN1,1+ALIEN1,1+ALIEN1,120+ALIEN1,1+ALIEN3,1+ALIEN3,1+ALIEN3,120+ALIEN3,30,1+ENDSECTION) ;
+level5=level5.concat(30+HIGHLAND,1+ALIEN3,1+ALIEN3,120+ALIEN3,1+ALIEN2,1+ALIEN2,40+ALIEN2,60+ALIENRETREAT,60+LGROCK,40+LHOLE,40+LHOLE,8+LGROCK,30+LGROCK,30,1+ENDLEV) ;
+
+ 
+var game=new Array(level1,level2,level3,level4,level5) ;
+
+var ocdLevel=new Array(100,100,100,100,1+RESTART) ;
+var OCDGame=new Array(ocdLevel) ;
+
+
+
+// For the loader
+// CHANGE GAME SPEED HERE
+var updateCount=10000 ;
+var inc=1 ;
+var timerSpeed=0 ;
+
+
+
+// Load some images
+document.img_buggy=new Image() ;
+document.img_buggy.src="moonbuggy0.gif" ;																
+
+
+
+
+document.img_tank=new Image() ;
+document.img_tank.src="tank.gif" ;
+
+document.img_tankBullet=new Image() ;
+document.img_tankBullet.src="tankbul.gif" ;
+
+
+document.img_bbullet=new Image() ;
+document.img_bbullet.src="bbullet.gif" ;
+
+
+document.img_bhbullet=new Image() ;
+document.img_bhbullet.src="hbul.gif" ;
+
+document.img_bhbulexp=new Image() ;
+document.img_bhbulexp.src="hbulexp.gif" ;
+
+document.img_abullet0=new Image() ;
+document.img_abullet0.src="abomb0.gif" ;
+
+
+document.img_abullet1=new Image() ;
+document.img_abullet1.src="abomb1.gif" ;
+
+
+document.img_dropexp=new Image() ;
+document.img_dropexp.src="dropexp.gif" ;
+
+document.img_mine=new Image() ;
+document.img_mine.src="mine.gif" ;
+
+document.img_bonus=new Image();
+document.img_bonus.src="bonus.gif" ;
+
+
+
+
+document.img_cautionLed=new Image() ;
+document.img_cautionLed.src="cautionl.gif" ;
+
+document.img_base=new Image() ;
+document.img_base.src="base.gif" ;
+
+
+
+document.img_caution=new Image() ;
+document.img_caution.src="caution.gif" ;
+
+
+
+// Load the buggy explosions
+document.img_bugexp=new Image() ;
+document.img_bugexp.src="bugexp.gif" ;	
+ 
+
+document.img_lwheel=new Image();
+document.img_lwheel.src="lwheel.gif" ;
+
+document.img_swheel=new Image() ;
+document.img_swheel.src="swheel.gif" ;
+
+document.img_largeRock=new Image() ;
+document.img_largeRock.src="largerock.gif" ;
+
+
+document.img_smallRock=new Image() ;
+document.img_smallRock.src="smlrock.gif" ;
+
+document.img_largeRoundRock=new Image() ;
+document.img_largeRoundRock.src="rrockl.gif";
+
+document.img_smallRoundRock=new Image() ;
+document.img_smallRoundRock.src="rrocks.gif" ;
+
+
+
+document.img_alien1=new Image() ;
+document.img_alien1.src="alien1.gif" ;
+
+
+document.img_alien2=new Image() ;
+document.img_alien2.src="alien2.gif" ;
+
+
+document.img_alien3=new Image() ;
+document.img_alien3.src="alien3.gif" ;
+
+
+document.img_bmbexp=new Image() ;
+document.img_bmbexp.src="bmbexp.gif" ;
+
+
+
+document.alienExp=new Image() ;
+document.alienExp.src="aexp.gif" ;
+
+// Load the backdrops
+document.img_foreland1=new Image() ;
+document.img_foreland1.src="forelnd.gif";
+
+document.img_foreland2=new Image() ;
+document.img_foreland2.src="citybak.gif";
+
+document.img_backland=new Image() ;
+document.img_backland.src= "backlnd.gif" ;
+
+
+
+
+
+var a=new Array(document.alienExp,document.img_bmbexp,document.img_alien3,document.img_alien2,document.img_alien1) ;
+a[a.length]=(document.img_smallRoundRock,document.img_largeRoundRock,document.img_smallRock,document.img_largeRock,document.img_swheel) ;
+a[a.length]=(document.img_lwheel,document.img_bugexp,document.img_caution,document.img_base,document.img_cautionLed,document.img_mine) ;
+a[a.length]=(document.img_dropexp,document.img_abullet1,document.img_abullet0,document.img_bhbulexp,document.img_bhbullet,document.img_bbullet) ;
+a[a.length]=(document.img_tankBullet,document.img_tank,document.img_buggy,document.img_bonus,document.img_foreland1,document.img_foreland2,document.img_backland) ;
+
+
+var maxGlobal=200 ;
+var global=new Array() ;
+for (i=0 ; i<maxGlobal ; i++)
+	global[i]=0 ;
+
+function AddGlobal(object)
+{
+	var  i ;
+	for(i=0 ; i<maxGlobal ; i++)
+		if(global[i]==0)
+		{
+			global[i]=object ;
+			break ;
+		}
+}
+
+function MoveGlobal()
+{
+	var i ; 
+	for(i=0; i<maxGlobal ; i++)
+	{
+		if(global[i])
+		{
+			if(global[i].Move())
+			{
+				global[i].Kill() ;
+				delete global[i] ;
+				global[i]=0 ;
+			}
+		}
+	}
+}
+	
+			
+
+
+
+
+/////////////////////////////////////
+// Check for point intersection of rectangle
+//////////////////////////////////////
+function PointIntersect(x,y,rx,ry,rw,rh)
+{
+	if(x>=rx && x<=rx+rw)
+		if(y>=ry && y<=ry+rh)
+			return 1 ;
+	return 0 ;
+}
+
+////////////////////////////////////
+// Tank class
+////////////////////////////////////
+function TankBullet_Kill()
+{
+
+	if(this.sprite!=0)
+	{
+		this.sprite.Destroy() ;
+		delete this.sprite ;
+		this.sprite=0 ;
+	}
+	eval(this.callback) ;
+}
+	
+function TankBullet_Move()
+{
+	this.xpos-=(scrollStep*1.6) ;
+
+	this.sprite.MoveX(this.xpos) ;
+	if(this.xpos<=0)
+		return 1 ;
+	// Check for intersction with moon buggy
+  
+  	if(PointIntersect(this.xpos,this.ypos,moonBuggy.x,moonBuggy.y,moonBuggy.w,moonBuggy.h))
+	{
+	
+		if(moonBuggy.Die(0))
+		{
+//			this.Kill() ;
+			return 1 ;
+		}
+	
+		
+	}
+
+	var bbullet=moonBuggy.CheckBulletRectangle(this.xpos,this.ypos) ;
+	if(bbullet)
+	{
+  
+ //		this.Kill() ;
+		moonBuggy.bullets[bbullet-1].HorKill() ;
+		return 1 ;
+	}
+	return 0 ;
+}
+	
+function TankBullet(x,y,idx,callback)
+{
+
+	this.sprite=new Sprite() ;
+
+	this.xpos=x ;
+	this.ypos=y ;
+	this.w=12 ;
+	this.h=6 ;
+	this.callback=callback ;
+	this.sprite.SetSprite(document.img_tankBullet.src,x,y,this.w,this.h,1,0,5) ;
+	this.sprite.Show() ;
+	this.Kill=TankBullet_Kill ;
+	this.Move=TankBullet_Move ;
+}
+
+
+
+function KillTankBullet(index)
+{
+
+	if(obstacles[index]!=0)
+		if(obstacles[index].type==TANK)
+		{
+	
+			obstacles[index].bullet=0 ;
+		}
+}
+
+	
+
+///////////////////////////////////////	
+// Starting base class
+//////////////////////////////////////
+function Base_Move()
+{
+	this.x-=scrollStep ;
+	this.sprite.MoveX(this.x) ;
+	if(this.x<-200)
+		return 1 ;
+	return 0 ;
+}
+
+function Base_Kill()
+{
+	this.sprite.Hide() ;
+}
+
+function Base_GetTime() 
+{
+	if(this.time)
+		this.time-- ;
+	return this.time?0:1 ;
+}
+
+function Base_HideText() 
+{
+}
+
+function Base()
+{
+	var i ;
+	this.x=170 ;
+	this.y=286 ;
+	this.time=200 ;
+	this.sprite=new Sprite() ;
+	this.sprite.SetSprite(document.img_base.src,this.x,this.y,262,70,1,1,5) ;
+	this.sprite.Show() ;
+	var t=326;
+	lastHeight=landBase-60 ;
+	for(i=0 ; i<maxPanels+1 ; i++)
+	{
+		if(i>18 && i<30)
+		{
+	   		landTops[i]=t ;
+					}
+		if(i>=29 && i<59)
+		{
+			landTops[i]=t ;
+			t+=i&1 ;
+			landStartHeight=lastHeight=landTops[i] ;
+
+		}
+			
+		if(i>=59)
+		{
+			landTops[i]=t ;
+			t-=i&1 ;
+		}
+ 	}
+	this.Move=Base_Move ;
+	this.Kill=Base_Kill ;
+	this.HideText=Base_HideText ;
+	this.GetTime=Base_GetTime ;
+	ScrollAll() ;
+
+}
+
+
+
+
+///////////////////////////////////
+// Alien bullet class
+//////////////////////////////////
+function AlienBullet_Kill()
+{
+	if(this.type)
+		alien2BulletHoldoff=0 ;
+   	if(this.sprite !=0)
+   	{
+   		this.sprite.Destroy() ;
+   		delete this.sprite ;
+   		this.sprite=0 ;
+   	} 
+	abMask[this.index]=0 ;
+	eval(this.callback) ;
+}
+
+function AlienBullet_Explode()
+{
+	var hold=(this.exploding>255?this.exploding-256:this.exploding) ;
+  	if(hold>=7)
+		return 1 ;	
+	if(this.exploding >255)
+		this.sprite.SetSprite(document.img_dropexp.src,this.x,this.y,14,16,1,0,6) ;
+	else
+	{
+	 	this.aniTimer++ ;
+		this.x-=scrollStep ;
+		if(this.x<landLeftOffset)
+			return 1 ;
+		if(this.aniTimer &2)
+			return 0 ;
+
+		this.sprite.SetIncarnation((hold<=5?hold:5)-1) ;
+	}
+	this.exploding++;
+	this.sprite.MoveX(this.x) ;
+
+	return 0 ;
+}
+	
+
+function AlienBullet_Move()
+{
+
+	
+	if(this.exploding)
+		return this.Explode() ;
+
+	var wheelLandOffset,i ;
+	this.x+=this.xspeed ;
+
+	this.xspeed+=this.xrate ;
+	if(this.xspeed<0)
+		this.xspeed=0 ;
+
+	this.y+=this.yspeed ;
+
+	this.yspeed+=this.yrate ;
+	if(this.yspeed>this.maxYSpeed)
+		this.yspeed=this.maxYSpeed ;
+	// Check for land collision
+	wheelLandOffset=Math.round((this.x-landLeftOffset)/panelWidth) ;
+	
+	if(this.x>maxX)
+	{
+		this.Kill() ;
+		return 1;
+	}
+	if(this.y>(landTops[wheelLandOffset] & NOTHOLING))
+	{
+		if(this.type==1)
+		{
+						for(i=wheelLandOffset ; i<wheelLandOffset+smallHole[0] ; i++)
+			{
+				if(!(landTops[i]&INHOLING))
+				{
+					landTops[i]-=smallHole[(i-wheelLandOffset)+1] ;
+					if(landTops[i]>(landBase-20))
+					{
+						landTops[i]=landBase-20+Math.round( (3*Math.random() ) -3 );			
+					}
+			
+			
+					if(i>=maxPanels)
+					{
+						holeDepthIndex=holeToUse[0]-(i-wheelLandOffset) ;
+						holing=1 ;
+						break ;
+					}
+				}
+				else
+					break ;
+			 }
+		}
+		this.exploding=1 ;
+		this.sprite.SetSprite(document.img_bmbexp.src,Math.round(this.x-30),Math.round(this.y-65),56,64,5,0,6) ;
+		return this.Explode() ;
+
+	}
+	this.aniTimer++ ;
+
+	if(this.type)
+		this.sprite.SetIncarnation(this.aniTimer&1) ;
+	else
+	{
+		if(this.aniTimer<6)
+			this.sprite.SetIncarnation(0) ;
+		else
+			this.sprite.SetIncarnation(this.aniTimer<=10?1:2) ;
+	}
+
+	this.sprite.MoveTo(Math.round(this.x),Math.round(this.y)) ;
+	
+
+	if(moonBuggy.CheckBullets(this.x,this.y,this.w,this.h))
+	{
+
+ 		this.sprite.SetIncarnation(0) ;
+		this.exploding=256 ;
+  		return this.Explode() ;
+	}
+
+	if(PointIntersect(this.x+2,this.y+8,moonBuggy.x,moonBuggy.y,moonBuggy.w,moonBuggy.h))
+	{
+		this.Kill() ;
+		moonBuggy.Die(0) ;
+		return 1 ;
+	}
+
+	return 0 ;
+}
+
+function AlienBullet(xpos,ypos,type,idx,callback)
+{
+
+	this.sprite=new Sprite() ;
+   	this.x=xpos+10 ;
+	this.y=ypos ;
+	this.xspeed=7 ;
+	this.xrate=-0.2 ;
+	this.index=idx ;
+	this.yspeed=1 ;
+	this.yrate=1 ;
+	this.maxYSpeed=15 ;
+	this.exploding=0 ;
+	this.type=type ;
+
+	this.callback=callback ;
+	this.aniTimer=0 ;
+	this.Move=AlienBullet_Move ;
+	this.Kill=AlienBullet_Kill ;
+	this.Explode=AlienBullet_Explode ;
+	if(!type)
+	{
+		this.img=document.img_abullet0 ;
+		this.incarnations=3 ;
+		this.w=10 ;
+		this.h=12 ;
+
+	}
+	else
+	{
+		this.w=8 ;
+		this.h=6 ;
+		this.img=document.img_abullet1 ;
+		this.incarnations=2 ; 
+	}
+	this.sprite.SetSprite(this.img.src,this.x,this.y,this.w,this.h,this.incarnations,0,6) ;
+	this.sprite.Show() ;
+	if(this.type)
+		alien2BulletHoldoff=1 ;
+}
+
+function AddAlienBullet(xpos,ypos,type,callback)
+{
+	var i ;
+	if(type && alien2BulletHoldoff)
+		return 0 ;
+	if(type)
+		nukeDelay=80 ;
+	for(i=0 ; i<maxAlienBullets ; i++)
+		if(abMask[i]==0)
+			break ;		
+	
+	if(i==maxAlienBullets)
+		return 0;
+	abMask[i] =  new AlienBullet(xpos,ypos,type,i,callback) ;
+	AddGlobal(abMask[i]) ;
+	return 1 ;
+}
+
+
+	
+
+
+
+
+/////////////////////////////////
+// Do the alien class
+////////////////////////////////
+function Alien_GetNewTarget(xpos,ypos)
+{
+	var theta ;
+	if(this.retreating)
+		return ;						  
+		if(this.y==ypos)
+		{
+			if(xpos>this.x)
+				theta=0 ;
+			else
+				theta=Math.PI ;
+		}
+		else
+			theta=Math.atan(Math.abs((xpos-this.x))/Math.abs((ypos-this.y)));
+			
+		this.xinc=Math.sin(theta) ;
+		this.yinc=Math.cos(theta);
+
+		if(xpos<this.x)
+			this.xinc*=-1 ;
+
+		if(ypos<this.y)
+			this.yinc*=-1 ;
+		this.destx=xpos ;
+		this.desty=ypos ;
+}
+
+function Alien_Kill(mode)
+{
+	var i ;
+	if(this.sprite!=0)
+	{
+		this.sprite.MoveX(-this.w) ;
+		this.sprite.Destroy() ;
+		delete this.sprite ;
+		this.sprite=0 ;
+	}
+	aliens[this.index]=0 ;
+}
+
+// Check for intersection with buggy bullets
+function Alien_CheckExp()
+{	
+	if(this.explode)
+		return ;
+	if(moonBuggy.CheckBullets(this.x,this.y,32,14))
+	{
+		this.sprite.SetSprite(document.alienExp.src,this.x,this.y,32,32,3,0,6) ;
+ 		this.aniTimer=0 ;
+		this.explode=1 ;
+	
+		alienBonus[this.bonusIndex]-- ;
+		var c=alienBonus[this.bonusIndex] ;
+		if(!(c&7))
+			this.bonus=c>>3 ;
+		this.expTime=this.bonus?20:7 ;
+   		statusDisplay.AddScore(this.score+this.bonus) ;
+   	}
+}
+
+function Alien_Explode()
+{
+	if(this.aniTimer>this.expTime)
+		return 1 ;
+	if(this.aniTimer>7)
+	{
+		this.sprite.SetImage(document.img_bonus.src,28,14,2) ;
+		this.sprite.SetIncarnation(this.bonus==500?0:1) ;
+	}
+	else
+ 		this.sprite.SetIncarnation(Math.round(this.aniTimer/3)) ;
+	this.aniTimer++ ;
+	return 0 ;
+}
+
+function Alien_Retreat() 
+{
+	this.retreating=1 ;
+	this.desty=this.y ;
+	this.destx=0;
+	this.xinc=-0.8 ;
+	this.yinc=0 ;
+	this.yspeed=0 ;
+}
+
+function Alien_Move()
+{
+	var xOk=0,yOk=0,lastSpd;
+	lastSpd=this.xspeed ;
+	var i ;
+
+	this.CheckExp() ;	
+
+	if(this.explode)
+	{
+		return this.Explode() ;
+	}
+	
+
+	this.x+=this.xspeed ;
+	if((lastSpd>0 && this.xspeed<0) || (lastSpd<0 && this.xspeed>0))
+		this.GetNewTarget(this.destx,this.desty) ;
+
+	lastSpd=this.xspeed ;
+	this.xspeed+=this.xinc ;
+	if(Math.abs(this.xspeed)>this.maxSpeed)
+		this.xspeed=this.xinc<0?this.maxSpeed*-1:this.maxSpeed ;
+
+	if((lastSpd>0 && this.yspeed<0) || (lastSpd<0 && this.yspeed>0))
+		this.GetNewTarget(this.destx,this.desty) ;
+
+		
+
+	this.y+=this.yspeed ;
+	this.yspeed+=this.yinc ;
+	if(Math.abs(this.yspeed)>this.maxSpeed)
+		this.yspeed=this.yinc<0?this.maxSpeed*-1:this.maxSpeed ;
+		
+
+	if(this.xinc>0)
+	{
+		if(this.x>=this.destx)
+			xOk=1 ;
+	}
+	else
+		if(this.x<=this.destx)
+			xOk=1 ;
+	
+	if(this.yinc>0)
+	{
+		if(this.y>=this.desty)
+			yOk=1 ;
+	}
+	else
+		if(this.y<=this.desty)
+			yOk=1 ;
+
+	if(this.x<50||this.x>310 || this.y<150 || this.y>310)
+   {
+		xOk=yOk=1 ;
+	}
+  if(xOk && yOk)
+  {
+  		var ny=150+(30*Math.random());
+		this.GetNewTarget(landLeftOffset+((maxPanels * panelWidth)*Math.random()),ny) ;
+		if(this.retreating && this.x<=10)
+			return 1 ;
+	}
+
+  this.GetNewTarget(this.destx,this.desty) ;
+  this.sprite.MoveTo(this.x,this.y) ;
+
+	if(moonBuggy.CheckIntersection(this.x,this.y,this.w,this.h))
+	{
+		moonBuggy.Die(0) ;
+		return 1 ;
+	}
+
+ 	if(this.x>landLeftOffset && this.x<(maxPanels*panelWidth*0.66) &&!this.bullet)
+	{
+ 
+		var doIt ;
+		doIt=!nukeDelay ;
+		if(!this.nextBulletDelay && !nukeDelay)
+		{
+			if(this.type == 2)
+			{
+				if(!type3BombDelay)
+				{
+					this.bullet=AddAlienBullet(this.x,this.y,this.type==2?1:0,"KillAlienBullet("+this.index+")") ;
+					type3BombDelay=20+Math.round(10*Math.random())  ;
+				}
+			}
+			else
+			{
+				this.bullet=AddAlienBullet(this.x,this.y,this.type==2?1:0,"KillAlienBullet("+this.index+")") ;
+				this.nextBulletDelay=Math.round(30*Math.random()) ;
+			}
+
+		}
+		if(this.nextBulletDelay)
+	 		this.nextBulletDelay-- ;
+		if(nukeDelay)
+			nukeDelay-- ;
+ 
+	}
+
+    
+  this.aniTimer-- ;
+  if(!this.aniTimer)
+  {
+  	this.animation+=this.aniDir ;
+
+	if(this.animation>=this.incarnations)
+	{
+		if(!this.cycle)
+	  		this.animation=0 ;	
+		else
+		{
+			this.animation=this.incarnations-1 ;
+			this.aniDir=-1  ;
+			
+		}
+	}
+
+	if(this.animation<0)
+	{
+	
+		if(!this.cycle)
+			this.animation=this.incarnations-1 ;
+		else
+		{
+			this.aniDir=1 ;
+			this.animation=1 ;
+		}
+	}
+
+	this.aniTimer=alienAniSpeed ;
+ 	this.sprite.SetIncarnation(this.animation) ;
+  }
+  return 0 ;
+
+}
+
+
+
+function Alien(xpos,ypos,type,index)
+{		
+	var i ;
+	this.bullet=0 ;									
+  	this.x=xpos ;
+	this.y=ypos ;
+	this.type=type ;
+	this.aniDir=1 ;
+	this.cycle=0 ;
+	this.retreating=0 ;
+	this.score=200 ;
+	this.bonus=0 ;
+	this.expTime=0 ;
+
+	if(type==0)
+	{
+		this.img=document.img_alien1 ;
+		this.w=30 ;
+		this.h=16 ;
+		this.incarnations=1 ;
+		this.score=100 ;
+	}
+
+	if(type==1)
+	{
+		this.img=document.img_alien2 ;
+		this.w=32 ;
+		this.h=14 ;
+		this.incarnations=4 ;
+		this.cycle=1 ;
+	}
+
+
+	if(type==2)
+	{
+		this.img=document.img_alien3 ;
+		this.w=32 ;
+		this.h=32 ;
+		this.incarnations=4 ;
+	}
+
+	this.animation=0 ;
+	this.index=index ;
+	this.nextBulletDelay=30 ;
+	this.xspeed=0 ;
+	this.yspeed=0 ;
+	this.accx=0.5 ;
+	this.accy=0.5 ;
+	this.destx=250 ;
+	this.desty=40;
+	this.aniTimer=alienAniSpeed ;
+	this.explode=0 ;
+	this.bonusIndex=0 ;
+
+	this.maxSpeed=6 ;
+	this.Move=Alien_Move ;
+	this.Kill=Alien_Kill ;
+	this.Explode=Alien_Explode ;
+	this.CheckExp=Alien_CheckExp ;
+	this.GetNewTarget=Alien_GetNewTarget ;
+	this.Retreat=Alien_Retreat ;
+	this.GetNewTarget(this.destx,this.desty) ;
+	this.sprite=new Sprite() ;
+	this.sprite.SetSprite(this.img.src,this.x,this.y,this.w,this.h,this.incarnations,0,5) ;
+	this.sprite.Show() ;
+}
+
+function KillAlienBullet(index)
+{
+	if(aliens[index]!=0)
+	{
+		aliens[index].bullet=0 ;
+		aliens[index].nextBulletDelay=0 ;
+	}
+
+}
+
+
+function AddAnAlien(type)
+{
+	var i ;
+	for(i=0 ; i<maxAliens ; i++)
+		if(!aliens[i])
+		{
+			var x=Math.round(Math.random()*(panelWidth*maxPanels))+10 ;
+			aliens[i]=new Alien(x,60,type,i) ;
+			AddGlobal(aliens[i]) ;
+			aliens[i].bonusIndex=alienBonusIndex ;
+			alienBonus[alienBonusIndex]++ ;
+			if((alienBonus[alienBonusIndex]&7)==3)
+				alienBonus[alienBonusIndex] = (500<<3)+3 ;
+			if((alienBonus[alienBonusIndex]&7)==4)
+  				alienBonus[alienBonusIndex] = (800<<3)+4 ;
+   			break ;
+		}
+}
+
+
+/////////////////////////////////////////
+// End of alien class
+/////////////////////////////////////////
+
+function WritePanelHTML()
+{
+	var i,build ;
+
+	for(i=0 ; i<maxPanels+1 ; i++)
+	{
+		build="<div id='land"+i+"' style='position:absolute ; z-index:4 ;height:"+landStartHeight+" ; width:"+panelWidth+" ; background:#FF9747 ; left:"+(landLeftOffset+(i*panelWidth))+"; top:"+(landBase-landStartHeight)+"'></div>" ; 
+		landHeights[i]=landStartHeight ;
+		landTops[i]=landBase-landStartHeight ;
+		
+		document.write(build) ;
+		document.close() ;
+	}
+}
+
+
+function WriteSidePanelHTML()
+{
+	var build ;
+
+	document.write("<div style='position:absolute ; top:0 ; left:0; width:100 ; height:"+landBase+" ; z-index:10 ;background:#000000'></div>") ;
+	document.write("<div style='position:absolute ; top:0 ; left:"+((panelWidth * maxPanels)+landLeftOffset)+"; width:100 ; height:"+landBase+" ; z-index:10 ;background:#000000'></div>") ;
+	document.close() ;
+}
+
+function WriteBacklandHTML()
+{
+	var build ;
+
+	for(i=0 ; i<blands0.length ; i++)
+	{
+		build="<div id='backland"+i+"' style='position:absolute ; z-index:1 ; width:100 ; height:126 ; top:"+backLandTop+"; left:"+(landLeftOffset+(i*65))+"'><img id='bl"+i+"'></div>" ;
+		document.write(build) ;
+		document.close() ;
+	}
+}
+
+function Foreland_Kill()
+{
+	var i ;
+	for(i=0 ; i<this.count ; i++)
+	{
+		this.sprites[i].Destroy() ;
+		delete this.sprites[i] ;
+	}
+}
+
+function Foreland(name,scrollspeed,pWidth,pHeight,z,y)
+{
+	var i ;
+	this.xpositions=new Array ;
+	this.sprites=new Array() ;
+	this.count=10 ;
+	for(i=0 ; i <this.count ; i++)
+  	{
+		this.xpositions[i]=landLeftOffset+(pWidth*i) ;
+	  	this.sprites[i]=new Sprite()
+	 	this.sprites[i].SetImage(name,66,pHeight,10) ;
+		this.sprites[i].SetIncarnation(i) ;
+		this.sprites[i].Show() ;
+		this.sprites[i].MoveTo(this.xpositions[i],y) ;
+  		this.sprites[i].SetZ(z) ;
+
+
+	}
+	this.sprites[this.count-1].Hide() ;
+	this.Move=Foreland_Move ;
+	this.Kill=Foreland_Kill ;
+	this.speed=scrollspeed; 
+	this.pWidth=pWidth ;
+	this.hide=Math.round(pWidth)*3 ;
+
+}	
+
+function Foreland_Move()
+{
+	
+	var x ;
+	var i ;
+	var limit=panelWidth * maxPanels + landLeftOffset ;
+	for(i=0 ; i<this.count ; i++)
+	{
+		x=this.xpositions[i] ;
+		x-=this.speed ;
+		if(x<0)
+			x=this.count*this.pWidth-2 ;
+
+		if(x<=limit)
+			this.sprites[i].Show() ;
+		else
+			this.sprites[i].Hide() ;
+		
+		this.xpositions[i]=x ;
+	  	this.sprites[i].MoveX(x) ;
+	}
+}
+
+
+/////////////////////////////////////////////////////////
+// Moon buggy bullets
+/////////////////////////////////////////////////////////
+function BuggyBullet_Kill()
+{
+	if(this.sprite!=0)
+	{
+		this.sprite.Hide() ;
+		this.sprite.Destroy() ;
+		delete this.sprite ;
+		this.sprite=0 ;
+	}
+
+	return ;
+}
+
+function BuggyBullet_HorKill()
+{
+	if(this.type)
+	{
+		this.life=6 ;
+		this.end=6 ;
+	}
+	else
+		this.Kill() ;
+}
+
+function BuggyBullet_Move()
+{
+
+	this.sprite.MoveTo(this.xpos,this.ypos); 
+	// Bullet is vertical
+	if(!this.type)
+	{
+		this.ypos-=8 ;
+		if(this.ypos<90)
+		{
+			this.Kill() ;
+			return 1;
+		}
+	}
+	else
+	{
+	   		
+		if(this.life<=this.end)
+		{
+			if(this.life==this.end)
+			{
+				this.sprite.SetSprite(document.img_bhbulexp.src,this.xpos,this.ypos,32,32,4,0,5) ;
+			
+			}
+				
+				
+			if(this.life>=0)
+				this.sprite.SetIncarnation(Math.round((this.end-this.life)/2)) ;
+			else
+			{
+				this.Kill() ;
+				return 1 ;
+			}
+			this.xpos-=scrollStep ;
+		}
+		else
+		{
+			this.xpos+=10 ;
+			if(this.xpos>=this.xLim)
+			{
+				this.life=this.end ;
+				return 0;
+			}
+		}
+		this.life-- ;
+
+	}
+	return 0 ;
+}
+	
+
+function BuggyBullet(x,y,index,type)
+{
+	this.sprite=new Sprite() ;
+	if(!type)
+	{
+		this.xpos=x+18 ;
+		this.ypos=y-6 ;																	  
+		this.image=document.img_bbullet.src ;
+   		this.life=0 ;
+		this.w=2 ;
+		this.h=16 ;	  
+		this.xLim=(maxPanels*panelWidth)+landLeftOffset ;
+
+	}
+	else
+	{
+		this.xpos=x+65 ;
+		this.ypos=y+9 ;
+		this.w=24;
+		this.h=28 ;
+		this.image=document.img_bhbullet.src ;
+ 		this.life=20 ;
+		this.xLim=(maxPanels*panelWidth)+landLeftOffset-this.w; 
+
+	}
+
+
+	this.type=type ;
+	this.end=4 ;		
+	
+	this.sprite.SetSprite(this.image,this.xpos,this.ypos,this.w,this.h,1,0,5) ;
+	this.sprite.Show() ;
+	this.Move=BuggyBullet_Move ;
+	this.Kill=BuggyBullet_Kill ;
+	this.HorKill=BuggyBullet_HorKill ;
+}
+
+
+
+
+//////////////////////////////////////////////////////////
+// Moon buggy class
+/////////////////////////////////////////////////////////
+
+function Buggy_Kill()
+{
+	if(this.buggySprite!=0)
+	{
+		this.buggySprite.Destroy() ;
+		delete this.buggySprite ;
+		this.buggySprite=0 ;
+	}
+   
+	for(i=0 ; i<3 ; i++)
+	{
+   		this.wheels[i].Destroy() ;
+	 	delete this.wheels[i] ;
+	  	this.wheels[i]=0 ;
+	}
+  	for(i=0 ; i<this.bullets.length ; i++)
+	{
+		if(this.bullets[i])
+		{
+			this.bullets[i].Kill() ;
+			this.bullets[i]=0 ;
+		}
+	}
+
+}
+
+
+
+// Returns 1 if finsihed
+function Buggy_WheelExplosion()
+{
+	var i,wheelLandOffset ;
+  	for(i=0 ; i<3 ; i++)
+	{
+		if(this.wActive[i])
+		{
+  		  	this.wX[i]+=this.wXSpeed[i] ;
+		  	// TODO: Check for XLimits here
+		  	this.wY[i]+=this.wYSpeed[i] ;
+
+		  	wheelLandOffset=Math.round((this.wX[i]-landLeftOffset)/panelWidth) ;
+
+			var gradShift=Math.round((wheelLandOffset+4>=gradPos?wheelLandOffset-gradPos:0)*gradient) ;
+		  	if(this.wY[i]+this.wHeights[i]>=(landTops[wheelLandOffset+4]&NOTHOLING)-gradShift)
+		  	{
+		  		this.wY[i]=(landTops[wheelLandOffset+4]&NOTHOLING)-gradShift ;
+		  		this.wYSpeed[i]*=-1 ;
+				this.wY[i]+=this.wYSpeed[i] ;
+		  	}
+		  	else
+		   		this.wYSpeed[i]+=gravity ;
+		  	this.wheels[i].MoveTo(this.wX[i],this.wY[i]) ;
+		}
+	 }
+
+	if(this.wX[0]<landLeftOffset-10)
+	{
+		this.wActive[0]=0 ;
+		this.wheels[0].Hide() ;
+	}
+  
+
+	if(this.wX[2]>(maxPanels*(panelWidth-1))+landLeftOffset)
+	{
+		this.wActive[2]=0 ;
+		this.wheels[2].Hide() ;
+	}
+
+	if(this.wActive[0]==0 && this.wActive[2]==0)
+	{
+		return 1 ;
+	}
+	else
+		return 0 ;
+}
+
+
+// Explode the buggy
+// type=0 land
+// type=1 hole
+// Returns 0 if explosion already happening
+function Buggy_Die(type)
+{
+	
+	var i,wheelXS=[-8,0,8] ;
+   
+	
+   	if(this.exploding)
+		return 0;
+	this.exploding=1 ;
+	this.explodeIndex=0 ;
+	this.explodeType=type ;
+	// Ensure we don't exit the stage
+	level.dying=1 ;
+	level.diedInStage=statusDisplay.gameStage ;
+	if(type)
+	{
+		for(i=0 ; i<3 ; i++)
+	 		this.wheels[i].Hide() ;
+	} 
+	else
+	{
+		for(i=0 ; i<3 ; i++)
+		{
+			this.wXSpeed[i]=wheelXS[i] ;
+			this.wYSpeed[i]=-10 ;
+	 	}
+	}
+
+	this.buggySprite.Destroy() ;
+	delete this.buggySprite ;
+	this.buggySprite=new Sprite() ;
+	this.buggySprite.SetSprite(document.img_bugexp.src,this.x,this.y,92,64,5,0,5) ;
+	this.buggySprite.Show() ;
+	this.KillAllBullets() ;
+	return 1 ;
+}
+
+
+
+function Buggy_Explode()
+{
+	var done=0 ;
+
+	this.aniTimer++ ;
+	if(this.aniTimer &1)
+	{	
+		if(this.explodeIndex<5)
+		{
+			this.buggySprite.SetIncarnation(this.explodeIndex) ;
+
+		} 
+		else
+		{
+			done=1 ;
+			
+			this.buggySprite.Hide() ;
+		}
+		this.explodeIndex++ ;	
+	}		
+	if(!this.explodeType)
+		return this.WheelExplosion() ;
+	else
+		if(done)
+			return this.explodeIndex>10?1:0 ;
+	return 0 ;
+
+}
+
+
+// Returns 0 if OK
+// returns 1 if we died
+function Buggy_Place()
+{
+
+	if(this.exploding)
+	{
+		return this.Explode() ;
+	
+	}
+	this.seq ^=1 ;
+	wheelLandOffset=Math.round((this.x-landLeftOffset)/panelWidth) ;
+	var i ;
+	var delta=landBase+landStartHeight ;
+
+	var gradShift=Math.round((wheelLandOffset+4>=gradPos?wheelLandOffset-gradPos:0)*gradient) ;
+
+	
+
+
+	var o1=(landTops[wheelLandOffset]&NOTHOLING)-gradShift ;
+	var o2=(landTops[wheelLandOffset+2]&NOTHOLING)-gradShift ;
+	var o3=(landTops[wheelLandOffset+4]&NOTHOLING)-gradShift ;
+	var delta=Math.round((o1+o2+o3)/3) ;
+  
+
+	if(switches & FIRE)
+	{
+		this.Shoot() ;
+		switches &=~FIRE ;
+	}
+
+  	if(this.jumping)
+	{
+	
+		this.y-=this.jumpSpeed ;
+		this.jumpSpeed-=gravity ;
+		if(this.y>=(delta-40))
+		{
+			this.jumping=0 ;
+			this.y=delta-40 ;
+		}
+		if(switches & LEFT && this.x>landLeftOffset)
+			this.x+=-3 ;
+		else
+			if(this.x<this.xLimit)
+				this.x+=4
+
+		
+   		this.buggySprite.MoveY(Math.round(this.y)) ;
+	 	this.wheels[0].MoveY(this.y+22) ;
+		this.wheels[1].MoveY(this.y+22) ;
+		this.wheels[2].MoveY(this.y+25) ;
+		this.wY[0]=this.y+22 ;
+		this.wY[1]=this.y+22 ;
+		this.wY[2]=this.y+25 ;
+	}
+	else
+	{
+	if(switches & LEFT && this.x>landLeftOffset+80)
+		this.x+=-2 ;
+
+	if(!(switches & (LEFT | RIGHT)) && this.x>(landLeftOffset+80) && this.seq)
+		this.x+=-2 ;
+	
+	if(switches & RIGHT && this.x<this.xLimit)
+		this.x+=2 ;
+
+	if(switches & JUMP)
+		this.Jump() ;
+
+
+			this.y=delta-43 ;
+
+  			this.wY[0]=o1-17;		
+			this.wheels[0].MoveY(this.wY[0]) ;
+			this.wY[1]=o2-17;		
+			this.wheels[1].MoveY(this.wY[1]) ;
+			this.wY[2]=o3-15 ;  
+			this.wheels[2].MoveY(this.wY[2]) ;
+   		   	if(this.wY[0]>this.y+32 || this.wY[1]>this.y+32 || this.wY[2]>this.y+32)
+				this.Die(1) ;
+
+	}
+
+	this.buggySprite.MoveTo(this.x,this.y) ;
+		
+	this.wX[0]=this.x+5 ;
+	this.wheels[0].MoveX(this.wX[0]) ;
+	
+	this.wX[1]=this.x+22 ;
+	this.wheels[1].MoveX(this.wX[1]) ;
+	
+	this.wX[2]=this.x+42 ;
+	this.wheels[2].MoveX(this.wX[2]) ;
+
+		
+
+	if(this.aniTimer==0)
+	{
+		this.wheels[0].SetIncarnation(this.wheelAni) ;
+		this.wheels[1].SetIncarnation(this.wheelAni^1);
+		this.wheels[2].SetIncarnation(this.wheelAni) ;
+		this.wheelAni^=1 ;
+		this.aniTimer=0 ;
+	}
+	else
+		this.aniTimer-- ;
+
+  	for(i=0 ; i<this.bullets.length ; i++)
+	{
+		if(this.bullets[i])
+		{
+			if(this.bullets[i].Move())
+			{
+				
+				delete this.bullets[i] ;
+				this.bullets[i]=0 ;
+			}
+		}
+	}
+	return 0 ;
+}
+
+
+
+function Buggy_Jump()
+{
+	if(!this.jumping)
+		this.jumpSpeed=9 ;
+	this.jumping=1 ;
+	switches &=~JUMP ;
+}
+
+function Buggy_Shoot()
+{
+	var i ;
+
+  	if(this.exploding)
+		return ;
+
+	for(i=0 ; i<this.bullets.length-1 ; i++)
+	{
+		if(this.bullets[i]==0)
+		{
+			this.bullets[i]=new BuggyBullet(this.x,this.y,i,0) ;
+			break  ;
+		}
+	}  
+	
+	if(this.bullets[this.bullets.length-1]==0)
+	  this.bullets[this.bullets.length-1]=new BuggyBullet(this.x,this.y,this.bullets.length-1,1) ;
+
+}
+
+// Return index of offending buggy bullet +1
+function Buggy_CheckBullets(x,y,w,h)
+{
+	var i ;
+	for(i=0 ; i<this.bullets.length ; i++)
+	{
+		if(this.bullets[i].type)
+		{
+			if(PointIntersect(this.bullets[i].xpos+(this.bullets[i].w/2),this.bullets[i].ypos+(this.bullets[i].h/2),x,y,w,h))
+				return i+1 ;
+		}
+		else
+		{
+			if(PointIntersect(this.bullets[i].xpos,this.bullets[i].ypos,x,y,w,h))
+			{
+			  	return i+1 ;
+			}
+			if(PointIntersect(this.bullets[i].xpos+this.bullets[i].w,this.bullets[i].ypos,x,y,w,h))
+			{
+			  	return i+1 ;
+			}
+			if(PointIntersect(this.bullets[i].xpos,this.bullets[i].ypos+this.bullets[i].h,x,y,w,h))
+			{
+ 			  	return i+1 ;
+			}
+			if(PointIntersect(this.bullets[i].xpos+this.bullets[i].w,this.bullets[i].ypos+this.bullets[i].h,x,y,w,h))
+			{
+ 			  	return i+1 ;
+			}
+
+
+
+		}
+	}
+	return 0 ;
+}
+
+
+function Buggy_CheckBulletRectangle(x,y)
+{
+	
+	for(i=0 ; i<this.bullets.length ; i++)
+	{
+		if(this.bullets[i].type)
+		{
+	  
+			var bx=this.bullets[i].xpos;
+			var by=this.bullets[i].ypos ;
+			var bw=this.bullets[i].w ;
+			var bh=this.bullets[i].h ;
+			if(PointIntersect(x,y,bx,by,bw,bh))
+				return i+1 ;
+	   	}
+	}
+}
+
+function Buggy_CheckIntersection(x,y,w,h)
+{
+	var bx=this.x ;
+	var by=this.y ;
+	var intersectx=Math.round(this.w/3) ;
+	var intersecty=Math.round(this.h/3) ;
+
+	var i,j ;
+	for(i=0 ; i<3 ; i++)
+		for(j=0 ; j<3 ; j++)
+			if(PointIntersect(bx+(j*intersectx),by+(i*intersecty),x,y,w,h))
+				return 1 ;
+
+	return 0 ;
+}
+
+function Buggy_KillAllBullets()
+{
+	var i ;
+	for(i=0 ; i<this.bullets.length ; i++)
+	{
+		if(this.bullets[i]!=0)
+		{
+			this.bullets[i].Kill() ;
+			delete this.bullets[i] ;
+			this.bullets[i]=0 ;						   
+		}
+	}
+}
+
+
+function Buggy(xpos,ypos,type)
+{
+	this.buggySprite=new Sprite() ;
+	this.wheels=new Array() ;
+	
+	for(i=0 ; i<3 ; i++)
+		this.wheels[i]=new Sprite() ;
+																													   
+	this.x=xpos ;
+	this.y=ypos ;  
+	this.w=64;
+	this.h=38 ;
+	this.startY=ypos ;
+	this.wheelAni=0 ;
+	this.aniTimer=0 ;
+	this.xDir=0 ;
+
+	this.seq=0 ;
+	this.starty=ypos ;
+
+  	// Explosion wheel speed
+	this.wXSpeed = new Array() ;
+	this.wYSpeed=new Array() ;
+	this.wActive=new Array() ;
+	this.wX=new Array() ;
+	this.wY=new Array() ;
+	this.wHeights=new Array() ;
+   	this.bullets=new Array(0,0,0,0,0) ;
+	this.explodeSequence=new Array(0,1,0,1,2,1,2,3,4) ;
+	this.exploding=0 ;
+  	this.explodeIndex=0 ;
+	this.explodeType=0 ;
+
+	this.jumpSpeed=0 ;
+	this.jumping=0 ;
+	
+	this.width=64 ;
+	this.height=46 ;
+	this.xLimit=(maxPanels*panelWidth)-150-this.width+landLeftOffset ;
+
+	this.Place=Buggy_Place ;
+	this.Jump=Buggy_Jump ;
+	this.Shoot=Buggy_Shoot ;
+	this.Die=Buggy_Die ;
+	this.Explode=Buggy_Explode ;
+	this.WheelExplosion=Buggy_WheelExplosion ;
+	this.Kill=Buggy_Kill ;
+	this.CheckBullets=Buggy_CheckBullets ;
+	this.CheckBulletRectangle=Buggy_CheckBulletRectangle;
+	this.CheckIntersection=Buggy_CheckIntersection;
+	this.KillAllBullets=Buggy_KillAllBullets ;
+
+	this.buggySprite.SetSprite(document.img_buggy.src,this.x,this.y,this.w,this.h,1,0,5) ;
+	this.wheels[0].SetSprite(document.img_lwheel.src,200,0,16,18,2,0,5) ;
+	this.wheels[1].SetSprite(document.img_lwheel.src,200,0,16,18,2,0,5) ;
+	this.wheels[2].SetSprite(document.img_swheel.src,200,0,12,16,2,0,5) ;
+
+	this.Place() ;
+ 	this.buggySprite.Show() ;
+	for(i=0 ; i<3 ; i++)
+	{
+		this.wActive[i]=1 ;
+		this.wheels[i].Show() ;
+		if(i!=2)
+			this.wHeights[i]=18 ;
+		else
+			this.wHeights[i]=16 ;
+			
+	}
+	
+}
+
+///////////////////////////////////////////////////////
+//; Obstacle class
+//////////////////////////////////////////////////////
+function Obstacle_Move()
+{
+	this.xpos-=scrollStep ;
+
+	var wheelLandOffset=Math.round((this.xpos-landLeftOffset)/panelWidth) ;
+ 	var gradShift=Math.round((wheelLandOffset+4>=gradPos?wheelLandOffset-gradPos:0)*gradient) ;
+	var o1=(landTops[wheelLandOffset]&NOTHOLING)-gradShift ;
+
+
+ 
+	if(this.jScore && this.xpos+this.width<moonBuggy.x)
+	{
+		statusDisplay.AddScore(this.jScore) ;
+		this.jScore=0 ;
+		if(this.type==LHOLE || this.type==HOLE)
+		{
+			return 1 ;	
+		}
+
+	}
+
+	if(this.type==LHOLE || this.type==HOLE)
+	{
+		return 0 ;
+	}
+
+	this.sprite.MoveX(this.xpos) ;
+	if(this.xpos>landLeftOffset)
+		this.sprite.MoveY(o1-this.height+3) ;
+	this.ypos=o1-this.height+3 ;
+
+
+	var bullet=moonBuggy.CheckBullets(this.xpos,this.ypos,this.width,this.height) ;
+	if(bullet)
+	{
+	
+		moonBuggy.bullets[bullet-1].HorKill() ;
+	 	statusDisplay.AddScore(this.hScore) ;
+ 		return 1 ;
+	}
+    	
+	if(this.type==LGROCK || this.type==LGRROCK || this.type==TANK)
+		if(moonBuggy.CheckIntersection(this.xpos,this.ypos,this.width,this.height))
+		{
+
+			if(	moonBuggy.Die(0))
+			{
+	   
+				return 1 ;
+			}
+			
+		}
+
+	if(this.type==SMROCK || this.type==SMRROCK)
+		if(PointIntersect(this.xpos,this.ypos,moonBuggy.x,moonBuggy.y,moonBuggy.width,moonBuggy.height)) 
+		{
+
+	   		if(moonBuggy.Die(0))
+			{
+	   
+				return 1 ;	
+			}
+		}
+
+	if(this.type==MINE)
+		if(PointIntersect(this.xpos,this.ypos,moonBuggy.x,moonBuggy.y,moonBuggy.width,moonBuggy.height)) 
+		{
+
+	   		if(moonBuggy.Die(0))
+			{
+	   
+				return 1 ;	
+			}
+		}
+
+
+	if(this.xpos<=landLeftOffset-this.width)
+	{
+	 
+	 
+		return 1 ;
+	}
+
+	if(this.type==TANK)
+	{  	
+		if(!this.bullet)
+		{
+			if(this.bulletDelay)
+				this.bulletDelay-- ;
+			if(!this.bulletDelay)
+			{
+			   	this.bulletDelay=15 ;
+				a=new TankBullet(this.xpos,this.ypos+4,this.index,"KillTankBullet("+this.index+")") ;
+				AddGlobal(a) ;
+				this.bullet=1 ;
+			}
+		}
+ 	}
+   
+	if(this.incarnations>1)
+	{
+		if(this.aniTimer<this.aniSpeed)
+		{
+			this.aniTimer++ ;
+			return 0 ;
+		}
+		this.aniTimer=0 ;
+		this.incarnation++ ;
+		if(this.incarnation>=this.incarnations)
+			this.incarnation=0 ;
+		this.sprite.SetIncarnation(this.incarnation) ;
+	}
+	return 0 ;
+}
+
+function Obstacle_Kill()
+{
+	obstacles[this.index]=0 ;
+	if(this.type==LHOLE || this.type==HOLE)
+		return ;
+	this.sprite.Destroy() ;
+   	delete this.sprite ;
+}
+
+	
+function Obstacle(type,obsID)
+{
+	var  i ;
+	this.type=type ;
+	this.incarnation=0 ;
+	this.aniTimer=0 ;
+	this.aniSpeed=0 ;
+	this.jScore=0 ;
+	
+	if(type==LGROCK)
+	{							  
+		this.width=42 ;
+		this.height=32 ; 
+		this.graphic=document.img_largeRock.src ;
+		this.incarnations=1 ;
+		this.hScore=100 ;
+		this.jScore=80 ;
+		
+	}
+	if(this.type==SMROCK)
+	{
+		this.width=14 ;
+		this.height=14 ;
+		this.graphic=document.img_smallRock.src ;
+		this.incarnations=1 ;
+		this.hScore=100 ;
+		this.jScore=80 ;
+	}
+
+	if(type==LGRROCK)
+	{
+		this.width=24 ;
+		this.height=32 ; 
+		this.graphic=document.img_largeRoundRock.src ;
+		this.incarnations=6 ;
+		this.hScore=100 ;
+		this.jScore=50 ;
+		
+	}
+	if(this.type==SMRROCK)
+	{
+		this.width=12 ;
+		this.height=16 ;
+		this.graphic=document.img_smallRoundRock.src ;
+		this.incarnations=4 ;
+		this.hScore=100 ;
+		this.jScore=50 ;
+
+	}
+
+	if(this.type==TANK)
+	{
+ 		this.width=32 ;
+		this.height=32 ;
+		this.graphic=document.img_tank.src ;
+	 	this.bullet=0 ;
+		this.bulletDelay=10 ;
+		this.incarnations=1 ;
+		this.jScore=100 ;
+		this.hScore=200 ;
+	}
+	if(this.type==MINE)
+	{
+		this.width=12 ;
+		this.height=6 ;
+		this.graphic=document.img_mine.src ;
+		this.incarnations=2 ; 
+		this.jScore=50 ;
+		this.aniSpeed=3 ;
+	}
+
+
+	this.index=obsID ;
+	this.ypos=(landTops[maxPanels-1]&NOTHOLING)-this.height+3  ;
+	this.xpos=landLeftOffset+(maxPanels*panelWidth) ;
+	holingCountdown=Math.round(this.width/panelWidth) ;	
+	
+	this.Move=Obstacle_Move ;
+	this.Kill=Obstacle_Kill ;
+
+	if(this.type==LHOLE)
+	{
+		this.width=bigHole.length*panelWidth ;
+		this.jScore=80 ;
+		return ;
+	}
+
+	if(this.type==HOLE)
+	{
+		this.width=smallHole.length*panelWidth ;
+		this.jScore=50 ;
+		return ;
+	}
+
+
+  	this.sprite=new Sprite()
+	this.sprite.SetSprite(this.graphic,this.xpos,this.ypos,this.width,this.height,this.incarnations,0,5) ;
+	this.sprite.Show() ;
+}
+
+function AddRock(type)
+{
+	var i ;
+	for(i=0 ;i<maxObstacles ; i++)
+		if(obstacles[i]==0)
+		{
+			if(type==TANK)
+				obstacles[i]=new Obstacle(type,i);
+			else
+				obstacles[i]=new Obstacle(type,i);
+			AddGlobal(obstacles[i]) ;
+			return ;
+		}
+}
+
+////////////////////////////////////////////////////////
+// End land obstacle class
+///////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////
+// Continue class
+///////////////////////////////////////////////////
+function ContinueScreen_Process()
+{
+	if(this.secLast != secTimer)
+	{
+		document.getElementById("continueText").innerHTML="CONTINUE "+secTimer;
+		this.secLast=secTimer ;
+	}
+	if(secTimer==0)
+	{
+	
+
+		ocdDisplay=new OutOfCredit() ;
+	  		return 1 ;
+	}
+	if(switches & JUMP)
+	{
+		StartAtLevel(last,lastStageIndexRestore) ;
+		statusDisplay.gameStage=diedInStage ;
+		statusDisplay.score=0 ;
+		statusDisplay.lives=3 ;
+		statusDisplay.credit-- ;
+		statusDisplay.ShowCredit() ;
+		statusDisplay.ShowLives() ;
+
+		level.scrollCount=lastStageScrollCountRestore ;
+		switches=0 ;
+		return 1;
+	}
+	return 0 ;
+
+}
+
+
+function ContinueScreen_Kill()
+{
+	document.getElementById("continueDiv").style.visibility="hidden" ;
+}
+
+	
+
+function ContinueScreen()
+{
+	document.getElementById("continueDiv").style.visibility="visible" ;
+	secTimer=10 ;
+	this.secLast=11;
+	this.Process=ContinueScreen_Process ;
+	this.Kill=ContinueScreen_Kill ;
+}
+
+// END OF LEVEL
+function EndOfLevel_Process()
+{
+	if(this.timer)
+	{
+		this.timer-- ;
+		return 0 ;
+	}
+	
+	this.timer=3 ;
+	var c=this.text.charAt(this.pos) ;
+	if(c=='~')
+		this.stage=1  ;
+
+  	if(!this.stage)
+	{
+		if(c>'!' && c<'0' && c!='"')
+		{
+			this.cell++ ;
+		}
+	  	else
+	  	{
+	  		document.getElementById("cell"+this.cell).innerHTML+=c ;
+
+		}
+	  	this.pos++ ;  
+	}
+	else
+	{
+		if(this.bonus>=0)
+		{
+			this.bonusPoints+=100 ;
+			document.getElementById("cell7").innerHTML=this.record-- ;
+			document.getElementById("cell9").innerHTML=this.bonusPoints ;
+			this.bonus-- ;
+		}	
+		else
+		{
+			if(!this.delay)
+			{
+				this.point++ ;
+				if(this.point>4)
+					this.point=0 ;
+				lastStageScrollCountRestore=0 ;
+				lastStageIndexRestore=0 ;
+				StartAtLevel(this.point,0) ;
+				statusDisplay.ResetTimer() ;
+				statusDisplay.StartTimer() ;
+//				statusDisplay.IncrementStage() ;
+				statusDisplay.ShowStage() ;
+				return 1 ;
+			}
+			this.delay-- ;
+		}
+	}
+	return 0 ;
+ }
+
+function EndOfLevel_Kill()
+{
+	var i ;
+	
+	for(i=0 ; i<11 ; i++)
+		document.getElementById("cellDiv"+i).style.visibility="hidden" ;
+
+}
+
+function EndOfLevel(point,time)
+{
+
+	this.pos=0 ;
+	this.cell=-1 ;
+	this.stage=0 ;
+ 	this.timer=0 ;
+	this.delay=25;
+	this.bonusPoints=1000;
+	this.playerTime=time ;
+	this.point=point ;
+	this.record=records[point] ;
+
+	this.average=Math.round(averages[point]/averageCounts[point]) ;
+	var names=new Array('E','J','O','T','Z') ;
+	var pointName=names[point] ;
+	this.text=".TIME TO REACH POINT +\"" + pointName + "\"#YOUR TIME%" +time + "-THE AVERAGE TIME&" + this.average + "*TOP RECORD(" +this.record;
+	if(time<this.record)
+	{
+
+		this.bonus=this.record-time ;
+		records[point]=time ;
+		averages[point]+=time ;
+		averageCounts[point]++ ;
+
+		this.text+=")GOOD BONUS POINTS/1000$YOU HAVE BROKEN A RECORD!~"
+		document.getElementById("cellDiv8").style.left=landLeftOffset+30 ;
+		document.getElementById("cellDiv10").style.visibility="visible" ;
+
+	}
+	else
+	{
+		this.text+=")SORRY NO BONUS!~";
+		document.getElementById("cellDiv8").style.left=landLeftOffset+100 ;
+		document.getElementById("cellDiv10").style.visibility="hidden" ;
+
+	}
+
+		
+	this.Process=EndOfLevel_Process ;
+	this.Kill=EndOfLevel_Kill ;
+	var i ;
+	for(i=0 ; i<11 ; i++)
+	{
+		document.getElementById("cellDiv"+i).style.visibility="visible" ;
+		document.getElementById("cell"+i).innerHTML="" ;
+	}
+}
+
+
+
+//STATUS DISPLAY
+
+function StatusDisplay_Reset()
+{
+	this.score=0 ;
+	this.hiScore=-1 ;
+	this.time=0 ;
+	this.AddScore(0) ;
+
+	this.lives=3 ;
+	this.ShowLives() ;
+	this.ShowTime() ;
+	this.SetWarning(-1) ;
+	this.StopTimer() ;
+	this.gameStage=0 ;
+	this.ShowStage() ;
+	this.credit=3 ;
+	this.ShowCredit() ;
+}
+
+function Timer()
+{
+	if(statusDisplay.timing)
+	{
+		statusDisplay.time++ ;
+ 	}
+	if(secTimer)
+	{
+		 
+	 	secTimer-- ;
+	}
+}
+
+function StatusDisplay_ShowStage()
+{
+	var ch=" ABCDEFGHIJKLMNOPQRSTUVWXYZ" ;	
+	document.getElementById("stageDiv").innerHTML=ch.charAt(this.gameStage) ;
+}
+	
+
+function StatusDisplay_ShowTime()
+{
+	document.getElementById("timeDiv").innerHTML=this.time ;
+}
+
+function StatusDisplay_ShowCredit()
+{
+	document.getElementById("creditIndicatorDiv").innerHTML="CREDIT "+this.credit ;
+}
+
+function StatusDisplay_HideAll()
+{
+	this.cautionLed.hide() ;
+	this.caution.Hide() ;
+}
+
+function StatusDisplay_StartTimer()
+{
+	this.timing=1 ;
+	this.ShowTime() ;
+}
+
+function StatusDisplay_ResetTimer()
+{
+	this.time=0 ;
+}
+
+function StatusDisplay_StopTimer()
+{
+	this.timing=0 ;
+}
+
+
+function StatusDisplay_SetWarning(state)
+{
+	var i ;
+	if(state==0)
+  	{
+		this.cautionLed.MoveTo(440,18) ;
+		
+		this.cautionLed.SetIncarnation(0) ;
+		this.cautionLed.Show() ;
+		this.caution.Show() ;
+
+	}
+
+	if(state==1)
+  	{
+		this.cautionLed.MoveTo(440,34) ;
+		this.cautionLed.SetIncarnation(1) ;
+		this.cautionLed.Show() ;
+		this.caution.Show() ;
+
+	}
+
+	if(state==2)
+  	{
+		this.cautionLed.MoveTo(440,50) ;
+		this.cautionLed.SetIncarnation(2) ;
+		this.cautionLed.Show() ;
+		this.caution.Show() ;
+	}
+
+	if(state==-1)
+  	{
+		this.cautionLed.MoveTo(440,50) ;
+		this.cautionLed.SetIncarnation(0) ;
+		this.cautionLed.Hide() ;
+		this.caution.Hide() ;
+		this.stateTimer=0 ;
+		this.stateFlashTimer=0 ;
+		return ;
+	}
+
+
+	if(this.stateLamp != state || !this.statetimer)
+	{
+		this.stateLamp=state ;
+
+		this.stateTimer=15 ;
+		this.stateFlashTimer=0 ;
+		this.stateNext=0 ;
+	}
+
+ }
+
+function StatusDisplay_Update(level,scrollsPerLevel,currentScroll)
+{
+	var w=level*48 ;
+	var l=level<4?(level+1)*48:10+(level+1)*48;
+	var t=Math.floor((moonBuggy.x-landLeftOffset-1)/panelWidth) ;
+	w+=Math.round( (currentScroll/(scrollsPerLevel-t))*(level<4?48:58));
+	w=w>l?l:w ;	
+	document.getElementById("progress").style.width=w ;
+	if(this.stateTimer)
+	{
+		
+	   	if(!this.stateFlashTimer)
+		{
+			this.stateNext^=1 ;
+			if(this.stateNext)
+				this.caution.Show()	;
+			else
+				this.caution.Hide();
+	  	    this.stateNext?this.cautionLed.Show():this.cautionLed.Hide();
+			this.stateFlashTimer=20 ;
+			this.stateTimer-- ;
+			if(!this.stateTimer)
+			{
+					this.cautionLed.Hide() ;
+					this.caution.Hide() ;
+
+			}
+
+		}
+		else
+			this.stateFlashTimer-- ;
+	}
+	this.ShowTime() ;
+	this.ShowStage() ;
+}  
+
+function StatusDisplay_ShowLives()
+{
+	document.getElementById("livesIndicatorDiv").innerText=this.lives ;
+}
+
+function StatusDisplay_AddScore(points)
+{
+	this.score+=points ;
+	if(this.score>this.hiScore)
+	{
+		this.hiScore=this.score ;
+		document.getElementById("highScoreDiv").innerText=this.score ;
+	}
+	document.getElementById("scoreDiv").innerText=this.score ;
+}
+
+function StatusDisplay_IncrementStage()
+{
+	this.gameStage++ ;
+	if(this.gameStage>26)
+		this.gameStage=0 ;
+
+}
+
+//////////////////////////////////////////////////////////
+// Status display class
+//////////////////////////////////////////////////////////
+function StatusDisplay()
+{
+	this.currentLevel=0 ;
+	this.currentLives=3 ;
+	this.warning=0 ;
+	this.hiScore=0 ;
+	this.gameStage=0 ;
+	this.score=0 ;
+	this.timing=0 ;
+	this.lives=0 ;
+	this.time=0 ;
+	this.credit=99 ;
+	this.AddScore=StatusDisplay_AddScore ;
+	this.ShowCredit=StatusDisplay_ShowCredit ;
+	this.Update=StatusDisplay_Update ;
+	this.SetWarning=StatusDisplay_SetWarning ;
+	this.Reset=StatusDisplay_Reset ;
+	this.ShowLives=StatusDisplay_ShowLives ;
+	this.caution=new Sprite() ;
+	this.cautionLed=new Sprite() ;
+ 	this.caution.SetSprite(document.img_caution.src,458,32,86,20,1,0,6) ;
+	this.cautionLed.SetSprite(document.img_cautionLed.src,0,0,12,14,3,0,6) ;
+	this.ShowTime=StatusDisplay_ShowTime ;
+	this.StartTimer=StatusDisplay_StartTimer ;
+	this.StopTimer=StatusDisplay_StopTimer ;
+	this.HideAll=StatusDisplay_HideAll ;
+	this.ResetTimer=StatusDisplay_ResetTimer ;
+	this.ShowStage=StatusDisplay_ShowStage ;
+	this.IncrementStage=StatusDisplay_IncrementStage ;
+	this.Reset() ;
+}
+
+//////////////////////////////////////////////////////////
+// Level ID letter
+///////////////////////////////////////////////////////////
+
+
+function LevelLetter_Move()
+{
+	this.xpos-=scrollStep ;
+	this.el.style.left=this.xpos ;
+
+	if(this.xpos<=moonBuggy.x && this.doCheck==0 && !level.dying)  
+	{
+		this.doCheck=1 ;
+		statusDisplay.IncrementStage() ;
+
+		if(this.type==ENDLEV)
+		{
+			level.EndLevel() ;
+ 
+			return 1 ;
+		}
+
+		lastStageScrollCountRestore=lastStageScrollCount ;
+		lastStageIndexRestore=lastStageIndex ;
+	}
+	if(this.xpos<landLeftOffset-32)
+		return 2 ;
+	return 0 ;
+}
+
+function LevelLetter_Kill()
+{
+	this.el.style.visibility="hidden";
+	document.getElementById('leveltext').style.visibility="hidden" ;
+}
+
+function LevelLetter(stage,type)
+{
+	var lev="ABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
+	this.el=document.getElementById('levelname') ;
+	this.xpos=landLeftOffset+(panelWidth*maxPanels) ;
+	this.ypos=landBase-45 ;
+	this.el.style.left=this.xpos ;
+	this.el.style.top=this.ypos ;
+	this.Kill=LevelLetter_Kill ;
+	this.Move=LevelLetter_Move ;
+	this.type=type; 
+	this.doCheck=0 ;
+	this.el.style.visibility="visible";
+	document.getElementById('leveltext').style.visibility="visible";
+	document.getElementById('leveltext').innerHTML=lev.charAt(stage) ;
+}
+
+///////////////////////////////////////////////////////////
+// Do the keyboard stuff
+/////////////////////////////////////////////////////////
+function keyUpHandler(e)
+{
+	var code ;
+	// True if navigator
+	if(navigator.appName.indexOf("Microsoft")!=-1)
+ 	{
+		e=window.event ;
+		code=e.keyCode ;
+	}
+	else
+		code=e.which ;
+
+
+	switch(code)
+	{
+		case	77:	switches &=~FIRE ;
+						fireStop=FIRE ;
+						break ;
+  		case	78:	switches &=~JUMP ;
+						jumpStop=JUMP ;
+						break ;
+	  	case	90:		switches &=~LEFT ;
+						break ;
+		case	88:		switches &=~RIGHT ;
+						break ;
+	}
+ 
+}
+function keyDownHandler(e)
+{
+	
+	var code ;
+	// True if navigator
+	if(navigator.appName.indexOf("Microsoft")!=-1)
+ 	{
+		e=window.event ;
+		code=e.keyCode ;
+	}
+	else
+		code=e.which ;
+
+	if(code==77)
+	{
+		switches |=fireStop ;
+		fireStop=0 ;
+	}
+
+	if(code==78)
+	{
+		switches|=jumpStop ;
+		jumpStop=0 ;
+	}
+
+	if(code==90)
+	{
+		switches|=LEFT ;
+	}
+	if(code==88)
+	{
+		switches|=RIGHT ;
+	}
+
+}
+
+// Set up the keyboard handler
+document.onkeydown=keyDownHandler ;
+document.onkeyup=keyUpHandler ;
+
+
+
+//Init the gradient
+function StartGradient(newGradient)
+{
+	if(newGradient>0)
+	{
+		gradPos=maxPanels ;
+		gradient=newGradient ;
+	
+	}
+
+	if(newGradient<0)
+	{
+	  	downSlope=maxPanels-20;	
+	 }
+
+
+}
+
+function IncrementBonusIndex(last,comp)
+{
+	if(last!=comp)
+	{
+		alienBonusIndex++;
+		alienBonus[alienBonusIndex]=0 ;
+	}
+
+	if(alienBonusIndex>alienBonus.length)
+		alienBonusIndex=0 ;
+}
+
+
+/////////////////////////////////////////////////////////
+// Level class. Processes aliens, holes and rocks
+/////////////////////////////////////////////////////////
+function Level_Process()
+{
+	var retval=0 ;
+	
+
+	if(this.running)
+	{
+		if(this.toNextObstacle)
+		{
+			this.toNextObstacle-- ;
+			if(!this.toNextObstacle && this.nextAlert>0)
+			{
+				statusDisplay.SetWarning(this.nextAlert) ;
+	 	 	}
+
+		}
+
+	   	if(this.count==0)
+		{
+	
+			this.count=this.currentLevel[this.index]&255 ;
+			var obstypes=this.currentLevel[this.index] & (255<<9) ;
+
+			if(obstypes !=ENDLEV)
+			{
+				switch(this.currentLevel[this.index+1]&(255<<9))
+				{
+					case	ALIEN2:
+					case 	ALIEN1:	this.nextAlert=0 ;
+									this.toNextObstacle=this.count-(this.count>21?20:0) ;
+									break ;
+					case	ALIEN3: this.nextAlert=1 ;
+									this.toNextObstacle=this.count-(this.count>21?20:0) ;
+									break ;
+					case	TANK:
+					case	MINE:	this.nextAlert=2 ;
+									this.toNextObstacle=this.count-(this.count>21?20:0) ;
+									break ;
+				}
+		
+			}
+
+			if(obstypes == LGROCK)
+				AddRock(LGROCK) ;
+			if(obstypes == SMROCK)
+			{
+		   		AddRock(SMROCK) ;
+			}
+			if(obstypes == LGRROCK)
+				AddRock(LGRROCK) ;
+			if(obstypes == SMRROCK)
+				AddRock(SMRROCK) ;
+
+			if(obstypes== HOLE)
+			{
+				AddRock(HOLE) ;
+				retval=1 ;
+			}
+			if(obstypes== LHOLE)
+			{
+				retval=2 ;
+				AddRock(LHOLE) ;
+			}
+
+			if(obstypes == ENDGAME)
+				this.running=0 ;
+			if(obstypes == TANK)
+				AddRock(TANK) ;
+			if(obstypes == MINE)
+				AddRock(MINE) ;
+
+			if(obstypes == ALIEN1)
+			{
+			 	IncrementBonusIndex(lastObs,ALIEN1) ;
+				AddAnAlien(0) ;
+			}
+			if(obstypes == ALIEN2)
+			{
+				IncrementBonusIndex(lastObs,ALIEN2) ;
+				AddAnAlien(1) ;
+			}
+			if(obstypes == ALIEN3)
+			{
+				IncrementBonusIndex(lastObs,ALIEN3) ;
+
+				AddAnAlien(2) ;
+			}
+
+			if(obstypes== ALIENRETREAT)
+			{
+				var i ;
+				for(i=0 ; i<maxAliens ; i++)
+				{
+					if(aliens[i])
+					{
+			 			aliens[i].Retreat() ;
+					}
+				}
+			}
+					
+
+			if(obstypes == GRADIENTUP)
+				StartGradient(0.7) ;
+			if(obstypes == GRADIENTDOWN)
+				StartGradient(-0.7) ;
+			if(obstypes == GRADIENTZERO)
+			{
+				endSlopeUp=1 ;
+			}
+
+			
+		  
+			if(obstypes == ENDSECTION)
+			{
+  				lastStageScrollCount=this.scrollCount ;
+				lastStageIndex=this.index+1 ;
+				AddGlobal(new LevelLetter(statusDisplay.gameStage,0)) ;
+  			}
+				
+			this.index++ ;
+			if(obstypes == ENDLEV)
+			{
+				
+	  			AddGlobal(new LevelLetter(statusDisplay.gameStage,ENDLEV)) ;
+			}
+
+			if(obstypes == RESTART)
+				this.index=0 ;
+			lastObs=obstypes; 
+
+			
+ 		}
+		else
+			this.count-- ;
+
+	
+	}
+	
+	return retval ;
+}
+		
+function Level_Kill()
+{
+	var i,build ;
+
+	for(i=0 ; i<maxPanels ; i++)
+	{
+		document.getElementById("land"+i).style.visibility="hidden" ;
+	}
+	this.foreland.Kill() ;
+	this.backland.Kill() ;
+
+}
+
+function Level_GetScrollsThisLevel()
+{
+	var i=0 ;
+	this.scrollsThisLevel=0 ;
+	while((this.currentLevel[i] & (255<<9)) !=ENDLEV && (this.currentLevel[i] & (255<<9)) !=RESTART)
+ 	{
+ 		this.scrollsThisLevel+=this.currentLevel[i]&255 ;
+ 		i++ ;
+ 	}
+	this.scrollsThisLevel+=maxPanels ;
+}
+
+function Level_EndLevel()
+{
+	this.endLevelFlag=1 ;
+}
+		
+
+function Level(theGameArray,startLevel,subSection)
+{
+	var i ;
+	this.index=subSection ;
+	this.currentStage=startLevel ;
+	this.currentLevel=new Array() ;
+	this.currentLevel=theGameArray[startLevel] ;
+	this.scrollCount=0 ;   
+	this.count=0 ;
+	this.lastLevelLetterIndex=0 ;
+	this.dying=0 ;
+	holing=0 ;
+	holingCountdown=0 ;
+	this.diedInStage=0 ;
+	this.endLevelFlag=0 ;
+	this.stage=startLevel ;
+	this.Process=Level_Process ;
+	this.running=1 ;
+	endSection=0 ;
+	this.toNextObstacle=0 ;
+	this.nextAlert=0;
+	this.Kill=Level_Kill; 
+	gradPos=gradient=0 ;
+	if((this.currentLevel[subSection]  & (255<<9))== HIGHLAND)
+		lastHeight=landStartHeight=106 ;
+	else
+		lastHeight=landStartHeight=60 ;
+    maxHeight=landStartHeight+3 ;
+  	minHeight=landStartHeight-3 ;
+	for(i=0 ; i<maxPanels+1 ; i++)
+	{
+		document.getElementById("land"+i).style.visibility="visible"; 
+	   	
+		newHeight=lastHeight-2+(Math.round(Math.random()*4)) ;
+		if(newHeight>maxHeight)
+			newHeight=maxHeight ;
+		if(newHeight<minHeight)
+			newHeight=minHeight ;
+		landHeights[i]=landStartHeight ;
+		landTops[i]=landBase-landStartHeight ;
+		landTops[i]= landBase-newHeight;
+		lastHeight=newHeight ;
+	}
+
+	this.GetScrollsThisLevel=Level_GetScrollsThisLevel ;
+	if(startLevel & 1)
+		this.foreland=new Foreland(document.img_foreland2.src,2,66,218,2,foreLandTop-60) ;
+	else
+		this.foreland=new Foreland(document.img_foreland1.src,2,66,170,2,foreLandTop) ;
+	this.backland=new Foreland(document.img_backland.src,1,66,170,1,foreLandTop-60) ;
+	this.EndLevel=Level_EndLevel ;
+	this.GetScrollsThisLevel() ;
+}
+	
+	
+// Reset everything	   
+function ResetAll()
+{
+	var i=0 ;
+	for(i=0 ; i<maxGlobal ; i++)
+	{
+		if(global[i]!=0)
+		{
+			global[i].Kill() ;
+			delete global[i] ;
+			global[i]=0 ;
+		}
+	}
+ 
+	for(i=0 ; i<maxAliens ; i++)
+		if(aliens[i])
+		{
+   			aliens[i]=0 ;
+		}
+
+	for(i=0 ; i<maxObstacles ; i++)
+		if(obstacles[i])
+		{
+			obstacles[i]=0 ;
+		}
+}
+		
+
+
+	
+function WriteBuggyHTML()
+{
+
+	var i ;
+	document.write("<div id='buggy' style='position:absolute ; z-index:5 ; top:300 ; left:200 ; width:64'><img id='buggyimg' src='moonbuggy0.gif'></div>") ;
+	document.write("<div id='wheel0' style='position:absolute ; z-index:5 ; top:300 ; left:200 ; width:64'><img id='wheelimg0' ></div>") ;
+	document.write("<div id='wheel1' style='position:absolute ; z-index:5 ; top:300 ; left:200 ; width:64'><img id='wheelimg1' ></div>") ;
+	document.write("<div id='wheel2' style='position:absolute ; z-index:5 ; top:300 ; left:200 ; width:64'><img id='wheelimg2' ></div>") ;
+}
+
+
+function WriteStatusHTML()
+{
+	var HTML,i ;	   
+	var warnX=landLeftOffset+340 ;
+	HTML="<div id='status' style='position:absolute; z-index:99 ; visibility:visible ; top:0 ; left:"+landLeftOffset+" ; width:480 ; height:98'><img src='status.gif'>";
+	HTML+="<div  style='position:absolute; z-index:5 ; visibility:visible ; top:46 ; left:68'><span id='scoreDiv' class='statusfont'>00000</span></div>" ;
+	HTML+="<div  style='position:absolute; z-index:99 ; visibility:visible ; top:46 ; left:268'><span id='timeDiv' class='statusfont'>000</span></div>" ;
+	HTML+="<div  style='position:absolute; z-index:99 ; visibility:visible ; top:30 ; left:484'><span id='livesIndicatorDiv' class='statusfont'>3</span></div>" ;
+	HTML+="<div  style='position:absolute; z-index:99 ; visibility:visible ; top:15 ; left:53'><span id='highScoreDiv' class='statusfont'>00000</span></div></div>" ;
+	HTML+="<div  style='position:absolute; z-index:99 ; visibility:visible ; top:14 ; left:380'><span id='stageDiv' class='statusfont'>A</span></div></div>";
+	HTML+="<div  style='position:absolute; z-index:98 ; visibility:visible ; background:black ; top:78 ; left:"+(landLeftOffset+198)+" ; width:246 ; height:12'></div>" ;
+ 	HTML+="<div  style='position:absolute; z-index:98 ;  top:78 ; left:"+(landLeftOffset+198)+" ;  height:12'><img id='progress' style='width:0 ; height:12' src='prog.gif'></div>" ;
+    HTML+="<div  style='position:absolute; z-index:99 ; visibility:visible ; top:70 ; left:120'><span id='creditIndicatorDiv' class='statusfont'>CREDIT 3</span></div>" ;
+	
+ 	document.write(HTML) ;
+	document.close() ;
+}
+
+		
+
+
+function WriteAlienHTML()
+{
+	var i ;
+	var build ;
+	for(i=0 ; i<maxAliens ; i++)
+	{
+		build="<div id='aliendiv"+i+"' style='position:absolute ; width:30 ; visibility:hidden ;z-index:8 ;height:20 ; top:100 ; left:100 '><img id='alienimg"+i+"'></div>" ;
+		document.write(build);
+	}
+	for(i=0 ; i<maxAlienBullets ; i++)
+	{
+		build="<div id='abdiv"+i+"'  style='position:absolute; width:2 ; height:2  ; top:0 ; left:0 ; z-index:8'><img id='abimg"+i+"'></div>" ;
+		document.write(build) ;
+	}
+}
+
+
+WriteSidePanelHTML() ;
+WriteStatusHTML() ;
+WritePanelHTML() ;
+
+function StartAtLevel(num,subSect)
+{
+
+	level=new Level(game,num,subSect) ;
+
+    moonBuggy=new Buggy(200,297,0) ;
+	
+
+}
+
+
+function EndLife()
+{
+
+	last=level.currentStage ;
+	diedInStage=level.diedInStage ;
+	
+	ResetAll() ;
+	moonBuggy.Kill() ;
+  	delete moonBuggy ;
+	level.Kill() ;
+	delete level ;  
+	level=0 ;
+	statusDisplay.lives-- ;
+	statusDisplay.ShowLives() ;
+	if(statusDisplay.lives)
+	{
+   		StartAtLevel(last,lastStageIndexRestore) ;
+		statusDisplay.gameStage=diedInStage ;
+		level.scrollCount=lastStageScrollCountRestore ;
+	}
+	else
+	{
+		if(statusDisplay.credit)
+			contScreen=new ContinueScreen() ;
+		else
+			ocdDisplay=new OutOfCredit() ;
+
+	}
+}
+
+function SetLandHeights(newHeight)
+{
+	landStartHeight=newHeight ;
+	maxHeight=landStartHeight+3 ;
+	minHeight=landStartHeight-3	;
+}
+
+
+// Do the OCD
+function OutOfCredit_Process()
+{
+	if(switches)
+	{	
+		switches=0 ;
+		return 1 ;
+	}
+	 
+	ScrollAll() ;
+}
+
+function OutOfCredit_Kill()
+{
+	ResetAll() ;
+	moonBuggy.Kill() ;
+  	delete moonBuggy ;
+	level.Kill() ;
+	delete level ;  
+	level=0 ;
+}
+
+function OutOfCredit()
+{
+	document.getElementById("titleDisplay").style.visibility="visible" ;
+	level=new Level(OCDGame,0,0) ;
+	this.Kill=OutOfCredit_Kill ;
+	this.Process=OutOfCredit_Process ;
+	moonBuggy=new Buggy(170,297,0) ;
+	switches=0 ;
+}
+var timer=0 ;
+function ScrollAll()
+{
+	var holeType=0 ;
+	if(timer==0)
+	{
+
+
+		if(type3BombDelay)
+			type3BombDelay-- ;
+
+		scrollStep=panelWidth ;
+		if(moonBuggy.x<landLeftOffset+150)
+			timer=2 ;
+		if(moonBuggy.x>=landLeftOffset+150 && moonBuggy.x<landLeftOffset+265)
+			timer=1 ;
+		if(moonBuggy.x>=landLeftOffset+265)
+			timer=0 ;
+		holeType=level.Process() ;
+		if(holeType)
+			if(holing==0)
+			{
+				holing=1 ;
+			 	holeDepthIndex=1 ;
+			 	holeStartHeight=lastHeight ;
+				holeToUse=holes[holeType-1] ;
+			}
+
+			var newHeight;
+
+			if(holing==0)
+			{
+				newHeight=lastHeight+(2-(Math.round(Math.random()*4))) ;
+				if(newHeight>maxHeight)
+					newHeight=maxHeight ;
+
+				if(newHeight<minHeight)
+					newHeight=minHeight ;
+			}
+			else
+			{
+				newHeight=holeStartHeight+holeToUse[holeDepthIndex] ;
+				holeDepthIndex++ ;
+				if(holeDepthIndex>=holeToUse[0])
+					holing=0 ;
+			}
+			var i ;
+			var	grad ;	
+			for(i=0 ; i<maxPanels ; i++)
+			{
+				grad=Math.round((i-gradPos)*gradient) ;
+				if(gradient>0)
+					grad=i>gradPos?grad:0 ;
+				landTops[i]=landTops[i+1];
+				landHeights[i]=landBase-(landTops[i]& NOTHOLING) ;
+				document.getElementById("land"+i).style.top=(landTops[i] & NOTHOLING)-grad ; 
+				document.getElementById("land"+i).style.height=landHeights[i]+grad ;
+			}
+			grad=0 ;
+			if(gradient>0 && i>gradPos)
+				grad=Math.round(i*gradient) ;	
+					
+			landTops[i]=(landBase-newHeight) ;
+			if(holing || holingCountdown)
+			{
+				landTops[i] |= INHOLING ;
+				if(holingCountdown)
+					holingCountdown-- ;
+
+
+			} 
+			landHeights[i]=landBase-(landTops[i]&NOTHOLING) ;
+			document.getElementById("land"+i).style.top=landTops[i]-grad ;
+			document.getElementById("land"+i).style.height=landHeights[i]+grad ;
+
+
+			lastHeight=newHeight ;
+
+			if(gradPos!=0 && gradient>0)
+			{
+				gradPos-- ;
+			}
+
+			if(endSlopeUp)
+			{
+				if(gradPos==0)
+				{
+					lastHeight=newHeight+grad ;
+					SetLandHeights(lastHeight) ;
+					// Copy the displayed heights into the current heights
+					for(i=0 ; i<maxPanels+1 ; i++)
+					{
+						grad=Math.round((i-gradPos)*gradient) ;
+					 
+						landTops[i]=landTops[i]-grad;
+				   
+						landHeights[i]=landHeights[i]+grad ;
+					   
+					}
+					endSlopeUp=0 ;
+					gradient=0 ;
+				}
+			}
+			if(downSlope)
+			{
+				downSlope-- ;
+				landStartHeight-- ;
+				SetLandHeights(landStartHeight) ;
+			}
+			if(level)
+			{
+				level.foreland.Move() ;
+				level.backland.Move() ;
+				level.scrollCount++ ;
+			}
+		}
+		else
+		{
+			timer-- ;
+			scrollStep=0 ;
+			// Do almost the same as the real loop for timing consistency
+			for(i=0 ; i<maxPanels-1 ; i++)
+			{
+				grad=Math.round((i-gradPos)*gradient) ;
+				if(gradient>0)
+					grad=i>gradPos?grad:0 ;
+  				landHeights[i]=landBase-(landTops[i]& NOTHOLING) ;
+				document.getElementById("land"+i).style.top=(landTops[i] & NOTHOLING)-grad ; 
+				document.getElementById("land"+i).style.height=landHeights[i]+grad ;
+			}
+		}
+		if(moonBuggy.Place())
+			EndLife() ;
+}	
+
+
+var endOfLevel=0 ;
+function Scroll()
+{
+
+	if(base)
+	{
+		if(base.GetTime())
+		{
+			AddGlobal(base) ;
+			base.HideText() ;
+			statusDisplay.ResetTimer() ;
+			base=0 ;
+		}
+		return ;
+	}
+	if(contScreen)
+	{
+		if(contScreen.Process())
+		{
+			contScreen.Kill() ;
+			delete contScreen ;
+			contScreen=0 ;
+		}
+		return ;
+	}
+
+	if(ocdDisplay)
+	{
+	
+		if(ocdDisplay.Process())
+		{
+			document.getElementById("titleDisplay").style.visibility="hidden" ;
+			ocdDisplay.Kill() ;
+			delete ocdDisplay ;
+			ocdDisplay=0 ;
+			lastStageScrollCountRestore=0 ;
+			lastStageIndexRestore=0 ;
+
+			StartAtLevel(0,0) ;
+			moonBuggy.x=260;
+			moonBuggy.y=297 ;
+
+			statusDisplay.Reset() ;
+			statusDisplay.StartTimer() ;
+			base=new Base() ;
+			moonBuggy.Place() ;
+		}
+		return ;
+	}
+
+	if(endOfLevel)
+	{
+		if(endOfLevel.Process())
+		{
+	   		endOfLevel.Kill() ;
+			delete endOfLevel ;
+			endOfLevel=0 ;
+		}
+	}
+	else
+	{	
+	   	if(level!=0)
+		{
+			ScrollAll() ;
+			if(level)
+			{
+		  		MoveGlobal() ;
+				statusDisplay.Update(level.stage,level.scrollsThisLevel,level.scrollCount) ;
+
+				if(level.endLevelFlag)
+				{
+					var completedStage=level.stage ;
+				   	ResetAll() ;
+					
+					moonBuggy.Kill() ;
+					delete moonBuggy
+					level.Kill();
+					delete level ;
+					level=0 ;
+					endSection=1 ;
+					statusDisplay.StopTimer() ;
+				  	endOfLevel=new EndOfLevel(completedStage,statusDisplay.time) ;
+				}
+			}
+
+		}
+	}
+}
+
+function Test(value)
+{
+
+   	InitSprites() ;   
+	var i ;
+   
+	for(i=0 ; i<maxObstacles ; i++)
+		obstacles[i]=0 ;
+
+	for(i=0 ; i<maxAliens ; i++)
+		aliens[i]=0 ;
+	for(i=0 ; i<maxAlienBullets ; i++)
+		abMask[i]=0 ;
+	statusDisplay=new StatusDisplay() ;		
+	statusDisplay.StartTimer() ;
+	ocdDisplay=new OutOfCredit() ;
+
+	window.setInterval(Scroll,value) ;
+	window.setInterval("Timer()",1000) ;
+}
+
+
+</script>
+</head>
+
+<body id='main' bgcolor="#000000" text="#ffffff"  scroll="no" >
+
+
+<div id='loaderProgress0' style='position:absolute ; z-index:20 ;top:200 ; left:200; width:0; height:40 ; background:red'></div>
+<div  id='loaderProgress1' style='position:absolute ; z-index:19 ;top:199 ; left:199 ; width:199 ;height:42 ; background:gray'></div>
+<div  id='loaderProgress2' style='position:absolute ; z-index:21 ;top:200 ; left:200 ; width:200 ;height:40'><span id="loadingtext" class='loadtextr'>Loading..</span></div>
+
+<div id='levelname' style="position:absolute ; width:20 ; height:22 ;left:100 ; top:100 ; z-index:4 ;background:#00DE47  ; visibility:hidden"><img src='stagebak.gif'><div id='levelname' style='position:absolute ; width:20 ; height:20 ;left:3 ; top:0 ; z-index:4 ; visibility:visible'> <span align='center' id='leveltext' class='levelfont'></span></div></div>
+<div id='cellDiv0' style="position:absolute ;  visibility:hidden ; left:130 ; top:120 ; z-index:10 ; width:400 ; height:30"><span class='dtext' id="cell0" align=left>aaa</span></div>
+<div id='cellDiv1' style="position:absolute ; visibility:hidden ; left:480 ; top:120 ; z-index:10 ; width:100 ; height:30"><span class='dtext' id="cell1" align=left>bbbb</span></div>
+<div id='cellDiv2' style="position:absolute ; visibility:hidden ; left:130 ; top:160 ; z-index:10 ; width:400 ; height:30"><span class='dtextb' id="cell2" align=left>ccc</span></div>
+<div id='cellDiv3' style="position:absolute ; visibility:hidden ; left:480; top:160 ; z-index:10 ; width:100 ; height:30"><span class='dtextw' id="cell3" align=left>ddd</span></div>
+<div id='cellDiv4' style="position:absolute ; visibility:hidden ; left:130 ; top:200 ; z-index:10 ; width:400 ; height:30"><span class='dtextb' id="cell4" align=left>eee</span></div>
+<div id='cellDiv5' style="position:absolute ; visibility:hidden ; left:480 ; top:200 ; z-index:10 ; width:100 ; height:30"><span class='dtextw' id="cell5" align=left>fff</span></div>
+<div id='cellDiv6' style="position:absolute ; visibility:hidden ; left:130 ; top:240 ; z-index:10 ; width:400 ; height:30"><span class='dtext' id="cell6" align=left>gg</span></div>
+<div id='cellDiv7' style="position:absolute ; visibility:hidden ; left:480 ; top:240 ; z-index:10 ; width:100 ; height:30"><span class='dtext' id="cell7" align=left>hh</span></div>
+<div id='cellDiv8' style="position:absolute ; visibility:hidden ; left:130 ; top:280 ; z-index:10 ; width:400 ; height:30"><span class='dtextb' id="cell8" align=left>ii</span></div>
+<div id='cellDiv9' style="position:absolute ; visibility:hidden ; left:480 ; top:280 ; z-index:10 ; width:100 ; height:30"><span class='dtextw' id="cell9" align=left>jj</span></div>
+<div id='cellDiv10' style='position:absolute ; visibility:hidden ; left:130 ; top:320 ; z-index:10 ; width:400 ; height:30'><span class='dtext'  id="cell10" align=left>YOU HAVE BROKEN A RECORD!</span></div>
+<div id='continueDiv' style='position:absolute ; visibility:hidden ; left:280 ; top:250 ; z-index:10 ; width:500 ; height:100'><span class='dtext' align='center'>GAME OVER<P id='continueText'>CONTINUE 10</p></span></DIV>
+<div id='titleDisplay' style='position:absolute ; visibility:hidden ; left:220 ; top:120 ; z-index:10 ; width:274 ; height:300' align='center'><img src='title.gif'><br>
+<a  href='http://www.javascriptarcade.com' target='_parent'><span class='ltext'>www.javascriptarcade.com</span></a>
+</DIV>
+<script>
+
+
+function Loader_ToHex(val)
+{
+	val=val%256 ;
+	var hexCh="0123456789ABCDEF" ;
+	var build=hexCh.charAt(Math.floor(val/16)) ;
+	build+=hexCh.charAt(val%16) ;
+	return build ;
+}
+
+function Loader_RefreshLoader()
+{
+	var i ;
+	var loaded=0 ;
+	for(i=0 ; i<a.length ; i++)
+		if(a[i].complete)
+			loaded++ ;
+ 	document.getElementById("loaderProgress0").style.width=Math.round(200*(loaded/a.length)) ;
+	switch(updateCount & 3)
+	{
+		case	0:	document.getElementById("loadingtext").className="loadtextr" ;
+					break ;
+		case	1: 	document.getElementById("loadingtext").className="loadtextg" ;
+					break ;
+		case	2:	document.getElementById("loadingtext").className="loadtextb" ;
+					break ;
+		case	3:	document.getElementById("loadingtext").className="loadtexty" ;
+					break ;
+	}
+
+
+	updateCount-=updateCount>0?inc:0 ;
+
+	if(loaded==a.length && inc==0)
+	{
+		Test(Math.round(updateCount/68)>0?Math.round(updateCount/100):1) ;
+
+		for(i=0 ; i<3 ; i++)
+			document.getElementById("loaderProgress"+i).style.visibility="hidden" ;
+	}
+	else
+		window.setTimeout(Loader_RefreshLoader,1) ;
+
+	// Do almost the same as the real loop for timing consistency
+	for(i=0 ; i<maxPanels-1 ; i++)
+	{
+		grad=Math.round((i-gradPos)*gradient) ;
+		if(gradient>0)
+			grad=i>gradPos?grad:0 ;
+  		landHeights[i]=landBase-(landTops[i]& NOTHOLING) ;
+		document.getElementById("land"+i).style.top=(landTops[i] & NOTHOLING)-grad ; 
+		document.getElementById("land"+i).style.height=landHeights[i]+grad ;
+	}
+}
+
+function Loader_Tester()
+{
+	inc=0 ;
+}
+
+window.setTimeout(Loader_Tester,5000) ;
+window.setTimeout(Loader_RefreshLoader,1) ;
+
+function Disable(e)
+{	
+	return false
+}
+
+function Enable()
+{
+	return true
+}
+
+if(window.sidebar)
+{
+	document.onmousedown=Disable
+	document.onclick=Enable
+}
+var msg="";
+function DownInternetExp()
+{
+	if(document.all)
+	{
+		(msg);
+		return false;
+	}
+}
+function DownNetscape(e)
+{
+	if(document.layers||(document.getElementById&&!document.all))
+	{
+		if(e.which==2||e.which==3)
+		{	
+			(msg);
+			return false;
+		}
+	}
+}
+
+document.onselectstart=new Function("return false")
+
+
+if(document.layers)
+{
+	document.captureEvents(Event.MOUSEDOWN);
+	document.onmousedown=DownNetscape;
+}
+else
+{
+	document.onmouseup=DownNetscape;
+	document.oncontextmenu=DownInternetExp;
+}
+document.oncontextmenu=new Function("return false");
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
